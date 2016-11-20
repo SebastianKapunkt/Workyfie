@@ -1,0 +1,12 @@
+.idee-wrapper div {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 25px;
+    font-size: 80px;
+}
+
+.idee-wrapper .material-icons {
+    font-size: 90px;
+    color: gold;
+}
