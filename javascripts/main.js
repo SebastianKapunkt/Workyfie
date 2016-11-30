@@ -1,21 +1,30 @@
 function hideall() {
-    $('#persona').css("display", "none");
-    $('#system').css("display", "none");
-    $('#idee').css("display", "none");
+    $('#idee').hide();
+    $('#user').hide();
+    $('#technicals').hide();
 }
 
-$('#persona-link').click(function() {
+$( document ).ready(function() {
+    $('#persona-link').click(function() {
+        hideall();
+        $('#user').show();
+    });
+
+    $('#system-link').click(function() {
+        hideall();
+        $('#technicals').show();
+    });
+
+    $('#idee-link').click(function() {
+        hideall();
+        $('#idee').show();
+    });
+
     hideall();
-    $('#persona').css("display", "flex");
+    $('#idee').show();
 });
 
-$('#system-link').click(function() {
-    hideall();
-    $('#system').css("display", "flex");
-});
 
-$('#idee-link').click(function() {
-    hideall();
-    $('#idee').css("display", "flex");
-});
+
+
 

@@ -36,26 +36,68 @@
     box-shadow:  0 14px 28px rgba(33, 33, 33, 0.68), 0 10px 10px rgba(33, 33, 33, 0.9);
 }
 
-#system {
-    display: none;
-    justify-content: center;
-    align-items: center;
+.card{
     padding: 25px;
     margin: 15px;
     box-shadow: 0 1px 3px rgba(190, 190, 190, 0.36), 0 1px 2px rgba(190, 190, 190, 0.64);
     background-color: white;
+
+}
+.card .header,
+.card .header p{
+    text-align: center;
+}
+.card p {
+    text-align: justify;
 }
 
-#system img {
-    width: 800px;
-}
-
-#idee {
+/****** Sections */
+/* Idee */
+#generalidee {
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 25px;
-    margin: 15px;
-    box-shadow: 0 1px 3px rgba(190, 190, 190, 0.36), 0 1px 2px rgba(190, 190, 190, 0.64);
-    background-color: white;
+}
+#generalidee .idee-wrapper div {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 25px;
+    font-size: 80px;
+}
+#generalidee .idee-wrapper .material-icons {
+    font-size: 90px;
+    color: gold;
+}
+
+/* User */
+#persona{
+    margin-top: -15px;
+    flex-flow: column;
+}
+#persona .persona {
+    flex-basis: 0;
+    flex-grow: 1;
+    justify-content: center;
+}
+#storyboard {
+    display: flex;
+    flex-flow: column;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Technische Doku */
+#system {
+    justify-content: center;
+    align-items: center;
+}
+#system .image{
+    text-align: center;
+}
+
+#system img {
+    width: auto;
+    margin: 0 auto;
+    max-width: 800px;
 }
