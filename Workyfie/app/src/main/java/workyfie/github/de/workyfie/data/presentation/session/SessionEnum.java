@@ -1,4 +1,4 @@
-package data.presentation.session;
+package workyfie.github.de.workyfie.data.presentation.session;
 
 public enum SessionEnum {
     UNKNOWN,

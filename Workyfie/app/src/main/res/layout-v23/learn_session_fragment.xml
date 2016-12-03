@@ -19,8 +19,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/brain_activity"
-        android:visibility="gone"
-        android:padding="8dp">
+        android:padding="8dp"
+        android:stretchColumns="1,1"
+        android:visibility="gone">
 
         <TableRow
             android:layout_width="match_parent"
@@ -30,12 +31,14 @@
                 android:id="@+id/textView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_column="1"
                 android:text="@string/current_status" />
 
             <TextView
                 android:id="@+id/status"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:layout_column="2" />
         </TableRow>
 
         <TableRow
@@ -46,12 +49,15 @@
                 android:id="@+id/textView2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_column="1"
                 android:text="@string/current_session_duration" />
 
             <Chronometer
                 android:id="@+id/session_chronometer"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:layout_column="2"
+                android:gravity="center" />
         </TableRow>
 
         <TableRow
@@ -62,12 +68,15 @@
                 android:id="@+id/textView3"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_column="1"
                 android:text="@string/time_since_last_break" />
 
-            <TextView
-                android:id="@+id/last_breaK"
+            <Chronometer
+                android:id="@+id/last_break"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:layout_column="2"
+                android:gravity="center" />
         </TableRow>
 
     </TableLayout>

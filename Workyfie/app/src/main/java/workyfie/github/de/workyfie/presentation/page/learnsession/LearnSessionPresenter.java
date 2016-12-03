@@ -1,10 +1,12 @@
 package workyfie.github.de.workyfie.presentation.page.learnsession;
 
-import data.presentation.session.LearnSessionItem;
+import android.os.SystemClock;
+
+import workyfie.github.de.workyfie.data.presentation.session.LearnSessionItem;
 import workyfie.github.de.workyfie.presentation.mvp.Presenter;
 
-import static data.presentation.session.SessionEnum.IN_SESSION;
-import static data.presentation.session.SessionEnum.OUT_SESSION;
+import static workyfie.github.de.workyfie.data.presentation.session.SessionEnum.IN_SESSION;
+import static workyfie.github.de.workyfie.data.presentation.session.SessionEnum.OUT_SESSION;
 
 public class LearnSessionPresenter implements Presenter<LearnSessionView> {
 
@@ -12,7 +14,7 @@ public class LearnSessionPresenter implements Presenter<LearnSessionView> {
     private LearnSessionItem item;
 
     public LearnSessionPresenter() {
-        item = new LearnSessionItem(OUT_SESSION);
+        item = new LearnSessionItem(OUT_SESSION, SystemClock.elapsedRealtime(), SystemClock.elapsedRealtime());
     }
 
     @Override
@@ -25,6 +27,31 @@ public class LearnSessionPresenter implements Presenter<LearnSessionView> {
         view = null;
     }
 
+    private void drawView(LearnSessionItem item) {
+        view.drawState(item);
+    }
+
+    private void startSession() {
+        item = LearnSessionItem.setState(item, IN_SESSION);
+        item = LearnSessionItem.setSessionStartTime(item, SystemClock.elapsedRealtime());
+        item = LearnSessionItem.setLastBreak(item, SystemClock.elapsedRealtime());
+        drawView(item);
+    }
+
+    private void stopSession() {
+        item = LearnSessionItem.setState(item, OUT_SESSION);
+        drawView(item);
+    }
+
+    public void requestContent() {
+        drawView(item);
+    }
+
+    public void makeABreak() {
+        item = LearnSessionItem.setLastBreak(item, SystemClock.elapsedRealtime());
+        drawView(item);
+    }
+
     public void toggleSession() {
         switch (item.state) {
             case IN_SESSION:
@@ -34,21 +61,5 @@ public class LearnSessionPresenter implements Presenter<LearnSessionView> {
                 startSession();
                 break;
         }
-    }
-
-    private void startSession() {
-        item = LearnSessionItem.setState(item, IN_SESSION);
-        view.startSessionChronometer();
-        view.showInSession();
-    }
-
-    private void stopSession() {
-        item = LearnSessionItem.setState(item, OUT_SESSION);
-        view.stopSessionChronometer();
-        view.showNoSession();
-    }
-
-    public void requestContent() {
-
     }
 }

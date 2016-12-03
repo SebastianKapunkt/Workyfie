@@ -1,9 +1,11 @@
 package workyfie.github.de.workyfie.presentation.page.learnsession;
 
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,8 +14,9 @@ import android.widget.Button;
 import android.widget.Chronometer;
 
 import workyfie.github.de.workyfie.R;
+import workyfie.github.de.workyfie.data.presentation.session.LearnSessionItem;
 
-public class LearnSessionFragment extends Fragment implements LearnSessionView, View.OnClickListener{
+public class LearnSessionFragment extends Fragment implements LearnSessionView, View.OnClickListener, Chronometer.OnChronometerTickListener {
     public static final String TAG = LearnSessionFragment.class.getSimpleName();
 
     private LearnSessionPresenter presenter;
@@ -21,6 +24,8 @@ public class LearnSessionFragment extends Fragment implements LearnSessionView, 
     private View activity;
     private View information_area;
     private Chronometer sessionChronometer;
+    private Chronometer breakChronometer;
+    private AlertDialog alertDialog;
 
     public static LearnSessionFragment newInstance() {
         Bundle args = new Bundle();
@@ -46,6 +51,7 @@ public class LearnSessionFragment extends Fragment implements LearnSessionView, 
         activity = rootView.findViewById(R.id.brain_activity);
         information_area = rootView.findViewById(R.id.information_table);
         sessionChronometer = (Chronometer) rootView.findViewById(R.id.session_chronometer);
+        breakChronometer = (Chronometer) rootView.findViewById(R.id.last_break);
 
         return rootView;
     }
@@ -66,6 +72,10 @@ public class LearnSessionFragment extends Fragment implements LearnSessionView, 
 
     @Override
     public void onPause() {
+        if (alertDialog != null) {
+            alertDialog.cancel();
+            alertDialog = null;
+        }
         toggleSession.setOnClickListener(null);
         super.onPause();
     }
@@ -79,7 +89,7 @@ public class LearnSessionFragment extends Fragment implements LearnSessionView, 
 
     @Override
     public void onClick(View view) {
-        switch (view.getId()){
+        switch (view.getId()) {
             case R.id.toggle_session:
                 presenter.toggleSession();
                 break;
@@ -102,14 +112,66 @@ public class LearnSessionFragment extends Fragment implements LearnSessionView, 
     }
 
     @Override
-    public void startSessionChronometer() {
+    public void startSessionChronometer(long sessionStartTime) {
         Log.i(TAG, "" + SystemClock.elapsedRealtime());
-        sessionChronometer.setBase(SystemClock.elapsedRealtime());
+        sessionChronometer.setBase(sessionStartTime);
         sessionChronometer.start();
+        sessionChronometer.setOnChronometerTickListener(this);
     }
 
     @Override
     public void stopSessionChronometer() {
         sessionChronometer.stop();
+        breakChronometer.stop();
+    }
+
+    private void stopLastBreakChronometer() {
+        breakChronometer.stop();
+    }
+
+    private void startLastBreakChronometer(long lastBreak) {
+        breakChronometer.setBase(lastBreak);
+        breakChronometer.start();
+    }
+
+    @Override
+    public void drawState(LearnSessionItem item) {
+        switch (item.state) {
+            case IN_SESSION:
+                showInSession();
+                startSessionChronometer(item.sessionStartTime);
+                startLastBreakChronometer(item.lastBreak);
+                break;
+            case OUT_SESSION:
+                showNoSession();
+                stopSessionChronometer();
+                stopLastBreakChronometer();
+                break;
+        }
+    }
+
+    @Override
+    public void onChronometerTick(Chronometer chronometer) {
+        Log.i(TAG, SystemClock.elapsedRealtime() - chronometer.getBase() + " ");
+        if (SystemClock.elapsedRealtime() - chronometer.getBase() > 3000 && SystemClock.elapsedRealtime() - chronometer.getBase() < 4000) {
+            Log.i(TAG, " NOW ");
+            alertDialog = new AlertDialog.Builder(getContext())
+                    .setTitle("Du brauchst eine Pause!")
+                    .setMessage("Du solltest jetzt eine kurze Pause machen.")
+                    .setPositiveButton("Ja ich mach eine Pause", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            presenter.makeABreak();
+                        }
+                    })
+                    .setNegativeButton("Nein jetzt noch nicht", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            alertDialog.dismiss();
+                        }
+                    })
+                    .create();
+            alertDialog.show();
+        }
     }
 }
