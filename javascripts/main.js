@@ -22,6 +22,14 @@ $( document ).ready(function() {
 
     hideall();
     $('#idee').show();
+
+    $("#userstoriesTable").tablesorter();
+    $("#risikoanalyseTable").tablesorter();
+
+    $("#risikoanalyseTable").stickyTableHeaders();
+    $("#userstoriesTable").stickyTableHeaders();
+
+    //$("#sticky-header").sticky({topSpacing:0});
 });
 
 

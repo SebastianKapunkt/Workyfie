@@ -86,6 +86,12 @@
     justify-content: center;
     align-items: center;
 }
+#risikoanalyse .content-table,
+#userstories .content-table{
+    margin-left: -25px;
+    margin-right: -25px;
+    margin-bottom: -25px;
+}
 
 /* Technische Doku */
 #system {

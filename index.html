@@ -4,15 +4,17 @@
     <meta charset='utf-8'>
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link href='https://fonts.googleapis.com/css?family=Architects+Daughter' rel='stylesheet' type='text/css'>
+
     <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
     <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
     <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print">
     <link rel="stylesheet" type="text/css" href="stylesheets/footer.css" media="screen">
-    <link rel="stylesheet" type="text/css" href="stylesheets/persona.css" media="screen">
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="stylesheets/main.css" media="screen">
-    <link rel="stylesheet" type="text/css" href="stylesheets/idee.css" media="screen">
+    <link rel="stylesheet" href="stylesheets/table.css">
+
     <!--[if lt IE 9]>
     <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
@@ -168,6 +170,95 @@
                 Userstorie
             </h2>
         </div>
+        <div class="content-table">
+            <table id="userstoriesTable" class="tablesorter">
+                <thead>
+                <tr>
+                    <th></th>
+                    <th>User Storie</th>
+                    <th></th>
+                    <th>Storiy Points</th>
+                    <th>Priorität</th>
+                    <th>Definition of Done</th>
+                    <th>Status</th>
+                </tr>
+                <tr>
+                    <th>Person</th>
+                    <th>möchte....</th>
+                    <th>um...</th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>Julia</td>
+                    <td>Erinnerungen vom Mobilen Gerät erhalten </td>
+                    <td>in der Uni und auf der Arbeit bestmöglich konzentriert zu sein</td>
+                    <td></td>
+                    <td></td>
+                    <td>Julia erhält wenn sie unkonzentriert ist eine Push Notification auf ihr Handy</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>Julia</td>
+                    <td>Erinnerungen vom Mobilen Gerät erhalten </td>
+                    <td>um in der Uni und auf der  Arbeit immer Fit zu sein und 100% geben zu können</td>
+                    <td></td>
+                    <td></td>
+                    <td>Julia erhält wenn sie müde ist bzw. in einem Tagtraum verfällt eine Push Notification auf ihr Handy	</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>Julia</td>
+                    <td>Erinnerungen vom Mobilen Gerät erhalten </td>
+                    <td>um auf der Arbeit auf ihre Gesundheit zu achten</td>
+                    <td></td>
+                    <td></td>
+                    <td>Julia erhält regelmäßige Erinnerungen in From von Push Notification auf ihr Handy um zu Trinken, Pause zu machen oder einfach mal Aufzustehen</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>Julia</td>
+                    <td>Möchte die Interaktionen und Information informativ dargestellt haben</td>
+                    <td>um bei der Einarbeitung und der Bedienung der App nicht wertvolle Zeit zu verlieren- welche Sie nicht hat</td>
+                    <td></td>
+                    <td></td>
+                    <td>Das UI Design muss klar und einfach sein. Schlichtes Design, einfache Farben, wenig effekte. Wenig Text, klare Schaltflächen und mit Grrafiken und Bilder/Icons die bedinung intutitv gestalten. Mit wenig Klicks sollte man an seine Ziele gelangen (max. 5 pro Aktion)</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>Julia</td>
+                    <td>Möchte die Trinkmenge erfassen</td>
+                    <td>um sich selber zu kontrollieren und zu motivieren beim Trinken von Wasser</td>
+                    <td></td>
+                    <td></td>
+                    <td>In der App muss es möglich sein die Trinkmenge zu erfassen. Dies sollte einhergehen mit einer einfachen Bediengung und besonders schneller Erfassung. (Innerhalb von 3 Klicks soll dies möglich sein)</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>Julia</td>
+                    <td>Möchte eine Anleitung um die Sensoren richtig zu Platzieren</td>
+                    <td>um die App im vollen Umfangn nutzen zu können und nichtmit falschen Messwerten zu arbeiten</td>
+                    <td></td>
+                    <td></td>
+                    <td>In der App muss es einen Hinweis geben zur Platzierung der Sensoren. Die Platzierung sollte besonders anschaulich durch Bilder/Video demonstiert werden.</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>Julia</td>
+                    <td>Möchte Inforamtion von der App erhalten wenn etwas nicht stimmt (Sensoren falsch platziert, Verbindung zum Sensor unterbrochen, fehlende Messwerte)</td>
+                    <td>um die Ferhlerursache zu beheben und die App im vollen Funktionsumfangen zu Nutzen und sich zu 100% auf die App verlassen zu können</td>
+                    <td></td>
+                    <td></td>
+                    <td>In der App muss ein extra Warnhinweis bei Notificaton erscheinen sobald keine Sensor Daten mehr ankommen, die Sensordaten fehlerhaft sind oder die BT Verbindung unterbrochen ist.</td>
+                    <td></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
     </section>
 
 </div>
@@ -179,6 +270,251 @@
             <h2>
                 Risikoanalyse
             </h2>
+        </div>
+        <div class="legende">
+            <h4>Legende</h4>
+            <p>
+                A = Auftretenswahrscheinlichkeit (1 - unwahrscheinlich, 10 - sehr wahrscheinlich) <br>
+                B = Bedeutung für den Anwender  (1 - Kaum Folgen, 10 - schwere Folgen)<br>
+                E = Entdeckungswahrscheinlichkeit (1 - leicht zu erkennen, 10 - schwer zu erkennen) <br>
+                RPZ = Risikoprioritätszahl (wenn über 100 mus gehandelt werden)
+            </p>
+
+        </div>
+        <div class="content-table">
+            <table id="risikoanalyseTable" class="tablesorter">
+                <thead id="sticky-header">
+                <tr>
+                    <th>Komponente</th>
+                    <th>Potentieller Fehler</th>
+                    <th>Ursache des Fehlers</th>
+                    <th>Folgen des Fehlers</th>
+                    <th>A</th>
+                    <th>B</th>
+                    <th>E</th>
+                    <th>RPZ</th>
+                    <th>Risikminderung</th>
+                    <th>A</th>
+                    <th>B</th>
+                    <th>E</th>
+                    <th>RPZ</th>
+                </tr>
+
+                </thead>
+                <tbody>
+                <tr>
+                    <td>Netzwerk- Verbindung</td>
+                    <td class="long-text">
+                        <ul>
+                            <li>Keine Übertragung der Messerwerte</li>
+                        </ul>
+                    </td>
+                    <td class="long-text">
+                        <ul>
+                            <li>Störung durch andere Frequenzen</li>
+                            <li>Mobiles Gerät und BT-Sensor zu weit voneinander entfernt</li>
+                        </ul>
+                    <td class="long-text">
+                        <ul>
+                            <li>In der App werden keine Daten angezeigt</li>
+                            <li>Nutzer denkt er bedient die App Falsch</li>
+                            <li>Nutzer denkt die App funktioniert nicht und ist Frustriert</li>
+                            <li>Nutzer denkt der Sensor ist kaputt</li>
+                        </ul>
+                    </td>
+                    <td>3</td>
+                    <td class="warning">8</td>
+                    <td>5</td>
+                    <td class="danger">120</td>
+                    <td class="long-text">
+                        <ul>
+                            <li>Erinnerung in der App das der Sensor nichr Verbunden ist</li>
+                            <li>Ursachen gleich in der App erklären und den Nutzer auf die geneu Nutzung mit dem Sensor hinweisen</li>
+                        </ul>
+
+                    </td>
+                    <td>3</td>
+                    <td>2</td>
+                    <td>5</td>
+                    <td class="good">30</td>
+                </tr>
+                <tr>
+                    <td>Sensor/ Board</td>
+                    <td class="long-text">
+                        <ul>
+                            <li>fehlerhafte Messwerte</li>
+                        </ul>
+                    </td>
+                    <td class="long-text">
+                        <ul>
+                            <li>fehlerhafte Fertigung</li>
+                            <li>Haarriss auf der Platine</li>
+                        </ul>
+                    <td class="long-text">
+                        <ul>
+                            <li>In der App werden keine Daten angezeigt</li>
+                            <li>Nutzer denkt er bedient die App Falsch</li>
+                            <li>Nutzer denkt die App funktioniert nicht und ist Frustriert</li>
+                            <li>Nutzer denkt der Sensor ist kaputt</li>
+                            <li>Überanspruchung durch nicht- adäquates Training</li>
+                        </ul>
+                    </td>
+                    <td class="warning">3</td>
+                    <td>8</td>
+                    <td>10</td>
+                    <td class="danger">240</td>
+                    <td class="long-text">
+                        <ul>
+                            <li>auf Qulitäts- kompontenten bei der Fertigung achten</li>
+                            <li>hochwertige Materialen verwenden bei der Fertigung</li>
+                        </ul>
+
+                    </td>
+                    <td>1</td>
+                    <td>8</td>
+                    <td>10</td>
+                    <td class="good">80</td>
+                </tr>
+                <tr>
+                    <td>EEG Elektrode</td>
+                    <td class="long-text">
+                        <ul>
+                            <li>fehlerhafte Messwerte</li>
+                        </ul>
+                    </td>
+                    <td class="long-text">
+                        <ul>
+                            <li>fehlerhafte Positionierung</li>
+                        </ul>
+                    <td class="long-text">
+                        <ul>
+                            <li>in der App werden falsche Messwerte angezeigt</li>
+                            <li>führt zu falschen Erinnerungen bzw. keinen Erinnerungen</li>
+                            <li>Nutzer der sich auf die App verläßt könnte nun wieder Fehler aufgund von fehlender Konzentration einbauen</li>
+                            <li>Nutzer der sich auf die App verläßt könnte wichtige Informationen verpassen, das er gereade unkonzentiert ist</li>
+                            <li>Überanspruchung durch nicht- adäquates Training</li>
+                        </ul>
+                    </td>
+                    <td class="warning">7</td>
+                    <td>9</td>
+                    <td class="warning">7</td>
+                    <td class="danger">441</td>
+                    <td class="long-text">
+                        <ul>
+                            <li>in der Anleitung die genaue Anbringung der Elektroden beschreiben</li>
+                            <li>ggf. Animation der Anbringung in der App aufzeigen</li>
+                            <li>Refernzwerte vom Nutzer erfasen für Entspannung und Konzentration</li>
+                        </ul>
+                        --> vergelichen dieser Referenzwerte als Grundlage
+
+                    </td>
+                    <td>2</td>
+                    <td>9</td>
+                    <td>3</td>
+                    <td class="good">54</td>
+                </tr>
+                <tr>
+                    <td>Hardware</td>
+                    <td class="long-text">
+                        <ul>
+                            <li>Keine Übertragung der Messerwerte</li>
+                        </ul>
+                    </td><td class="long-text">
+                    <ul>
+                        <li>Verbindungskabel defekt</li>
+                        <li>Board defekt</li>
+                        <li>Sensot defekt</li>
+                    </ul>
+                    <td class="long-text">
+                        <ul>
+                            <li>In der App werden keine Daten angezeigt</li>
+                            <li>Nutzer denkt er bedient die App Falsch</li>
+                            <li>Nutzer denkt die App funktioniert nicht und ist Frustriert</li>
+                            <li></li>
+                        </ul>
+                    </td>
+                    <td class="warning">3</td>
+                    <td>8</td>
+                    <td>10</td>
+                    <td class="danger">240</td>
+                    <td class="long-text">
+                        <ul>
+                            <li>auf Qulitäts- kompontenten bei der Fertigung achten</li>
+                            <li>hochwertige Materialen verwenden bei der Fertigung</li>
+                        </ul>
+
+                    </td>
+                    <td>1</td>
+                    <td>8</td>
+                    <td>10</td>
+                    <td class="good">80</td>
+                </tr>
+                <tr>
+                    <td>Akkumulator</td>
+                    <td class="long-text">
+                        <ul>
+                            <li>Keine Übertragung der Messerwerte</li>
+                        </ul>
+                    </td>
+                    <td class="long-text">
+                        <ul>
+                            <li>Niedriger / leerer Akkustand</li>
+                        </ul>
+                    <td class="long-text">
+                        <ul>
+                            <li>In der App werden keine Daten angezeigt</li>
+                            <li>Nutzer denkt er bedient die App Falsch</li>
+                            <li>Nutzer denkt die App funktioniert nicht und ist Frustriert</li>
+                            <li>Nutzer denkt der Sensor ist kaputt</li>
+                            <li>Überanspruchung durch nicht- adäquates Training</li>
+                        </ul>
+                    </td>
+                    <td>5</td>
+                    <td>8</td>
+                    <td class="warning">6</td>
+                    <td class="danger">240</td>
+                    <td class="long-text">
+                        <ul>
+                            <li>Ladestand des Akkus in Smartphone anzeigen</li>
+                            <li>Anzeige des ladestand beim Sensor-Komponten selber mit LED</li>
+                        </ul>
+
+                    </td>
+                    <td>5</td>
+                    <td>8</td>
+                    <td>1</td>
+                    <td class="good">40</td>
+                </tr>
+                <tr>
+                    <td>Smartphone Anwendung</td>
+                    <td class="long-text">
+                        <ul>
+                            <li>Messdaten könen nicht richtig ausgewertet werden</li>
+                        </ul>
+                    </td>
+                    <td class="long-text">
+                        <ul>
+                            <li>GUI nicht intuitiv bedienbar</li>
+                            <li>GUI sehr komplex und verwirrend das Falsche Daten eingeben/angegeben werden</li>
+                        </ul>
+                    <td class="long-text">
+                        <ul>
+                            <li>Überanspruchung durch nicht- adäquates Training</li>
+                        </ul>
+                    </td>
+                    <td>3</td>
+                    <td>5</td>
+                    <td>4</td>
+                    <td class="good">60</td>
+                    <td class="long-text">
+                    </td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                </tbody>
+            </table>
         </div>
     </section>
 
@@ -206,6 +542,8 @@
 </div>
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+<script src="javascripts/query.stickytableheaders.min.js"></script>
+<script src="javascripts/jquery.tablesorter.min.js"></script>
 <script type="text/javascript" src="javascripts/main.js"></script>
 </body>
 </html>
