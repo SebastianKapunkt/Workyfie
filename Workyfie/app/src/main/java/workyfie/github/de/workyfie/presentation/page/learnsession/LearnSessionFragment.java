@@ -152,9 +152,11 @@ public class LearnSessionFragment extends Fragment implements LearnSessionView, 
 
     @Override
     public void onChronometerTick(Chronometer chronometer) {
-        Log.i(TAG, SystemClock.elapsedRealtime() - chronometer.getBase() + " ");
-        if (SystemClock.elapsedRealtime() - chronometer.getBase() > 3000 && SystemClock.elapsedRealtime() - chronometer.getBase() < 4000) {
+        if ((SystemClock.elapsedRealtime() - chronometer.getBase()) % 10000 < 1000 && SystemClock.elapsedRealtime() - chronometer.getBase() > 0) {
             Log.i(TAG, " NOW ");
+            if (alertDialog != null) {
+                alertDialog.dismiss();
+            }
             alertDialog = new AlertDialog.Builder(getContext())
                     .setTitle("Du brauchst eine Pause!")
                     .setMessage("Du solltest jetzt eine kurze Pause machen.")
