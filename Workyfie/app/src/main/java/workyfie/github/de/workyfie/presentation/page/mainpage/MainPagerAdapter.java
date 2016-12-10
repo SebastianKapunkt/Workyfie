@@ -8,6 +8,7 @@ import android.support.v4.app.FragmentPagerAdapter;
 
 import workyfie.github.de.workyfie.R;
 import workyfie.github.de.workyfie.presentation.page.learnsession.LearnSessionFragment;
+import workyfie.github.de.workyfie.presentation.page.sensor.SensorFragment;
 
 public class MainPagerAdapter extends FragmentPagerAdapter {
 
@@ -24,7 +25,7 @@ public class MainPagerAdapter extends FragmentPagerAdapter {
             case 0:
                 return LearnSessionFragment.newInstance();
             case 1:
-                return MainActivity.PlaceholderFragment.newInstance(position);
+                return SensorFragment.newInstance();
             case 2:
                 return MainActivity.PlaceholderFragment.newInstance(position);
             default:
@@ -38,7 +39,7 @@ public class MainPagerAdapter extends FragmentPagerAdapter {
             case 0:
                 return context.getString(R.string.session);
             case 1:
-                return "settings";
+                return context.getString(R.string.sensor);
             case 2:
                 return "information";
             default:

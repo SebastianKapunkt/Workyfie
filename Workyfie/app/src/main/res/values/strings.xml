@@ -8,4 +8,9 @@
     <string name="current_status">Status</string>
     <string name="current_session_duration">duration of current session</string>
     <string name="time_since_last_break">time since last break</string>
+    <string name="connect_sensor">Connect Sensor</string>
+    <string name="sensor">Sensor</string>
+    <string name="start_record">Start record</string>
+    <string name="stop_record">Stop recording</string>
+    <string name="errSensorConntect">Fehler beim Verbinden mit dem Sensor</string>
 </resources>
