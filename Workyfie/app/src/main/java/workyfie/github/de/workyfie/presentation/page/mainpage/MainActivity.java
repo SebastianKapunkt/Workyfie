@@ -16,6 +16,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import workyfie.github.de.workyfie.R;
+import workyfie.github.de.workyfie.application.AnalyticsApplication;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -35,11 +36,16 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
-        mSectionsPagerAdapter = new MainPagerAdapter(getSupportFragmentManager(), getApplicationContext());
+        mSectionsPagerAdapter = new MainPagerAdapter(
+                getSupportFragmentManager(),
+                getApplicationContext(),
+                ((AnalyticsApplication) getApplication()).getDefaultTracker()
+        );
 
         // Set up the ViewPager with the sections adapter.
         mViewPager = (ViewPager) findViewById(R.id.container);
         mViewPager.setAdapter(mSectionsPagerAdapter);
+        mViewPager.setOnPageChangeListener(mSectionsPagerAdapter);
 
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
@@ -47,7 +53,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_main, menu);
+//        getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
 

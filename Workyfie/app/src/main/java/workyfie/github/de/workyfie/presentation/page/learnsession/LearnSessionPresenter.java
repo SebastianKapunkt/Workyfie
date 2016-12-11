@@ -1,16 +1,21 @@
 package workyfie.github.de.workyfie.presentation.page.learnsession;
 
+import android.icu.text.DateFormat;
 import android.os.SystemClock;
 
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 
+import java.util.Date;
+
 import workyfie.github.de.workyfie.application.AnalyticsApplication;
 import workyfie.github.de.workyfie.data.presentation.session.LearnSessionItem;
+import workyfie.github.de.workyfie.data.presentation.session.SessionEnum;
 import workyfie.github.de.workyfie.presentation.mvp.Presenter;
 
 import static workyfie.github.de.workyfie.data.presentation.session.SessionEnum.IN_SESSION;
 import static workyfie.github.de.workyfie.data.presentation.session.SessionEnum.OUT_SESSION;
+import static workyfie.github.de.workyfie.data.presentation.session.SessionEnum.BREAK;
 
 public class LearnSessionPresenter implements Presenter<LearnSessionView> {
 
@@ -44,19 +49,19 @@ public class LearnSessionPresenter implements Presenter<LearnSessionView> {
         drawView(item);
         tracker.send(new HitBuilders.EventBuilder()
                 .setCategory("Session")
-                .setAction("Started")
-                .setLabel(AnalyticsApplication.formatInterval(item.sessionStartTime))
+                .setAction("Started at")
+                .setLabel(new Date(System.currentTimeMillis()).toString())
                 .setValue(1)
                 .build());
     }
 
     private void stopSession() {
-        item = LearnSessionItem.setState(item, OUT_SESSION);
+        item = LearnSessionItem.reset();
         drawView(item);
         tracker.send(new HitBuilders.EventBuilder()
                 .setCategory("Session")
-                .setAction("Stopped")
-                .setLabel(AnalyticsApplication.formatInterval(SystemClock.elapsedRealtime() - item.sessionStartTime))
+                .setAction("Stopped at")
+                .setLabel(new Date(System.currentTimeMillis()).toString())
                 .build());
     }
 
@@ -67,9 +72,10 @@ public class LearnSessionPresenter implements Presenter<LearnSessionView> {
     public void makeABreak() {
         tracker.send(new HitBuilders.EventBuilder()
                 .setCategory("Session")
-                .setAction("Break")
+                .setAction("Break after")
                 .setLabel(AnalyticsApplication.formatInterval(SystemClock.elapsedRealtime() - item.lastBreak))
                 .build());
+        item = LearnSessionItem.setState(item, BREAK);
         item = LearnSessionItem.setLastBreak(item, SystemClock.elapsedRealtime());
         drawView(item);
     }
@@ -82,6 +88,26 @@ public class LearnSessionPresenter implements Presenter<LearnSessionView> {
             case OUT_SESSION:
                 startSession();
                 break;
+            case BREAK:
+                continueSession();
+                break;
+            case UNKNOWN:
+                item = LearnSessionItem.reset();
         }
+    }
+
+    private void continueSession() {
+        tracker.send(new HitBuilders.EventBuilder()
+                .setCategory("Session")
+                .setAction("Continue after")
+                .setLabel(AnalyticsApplication.formatInterval(SystemClock.elapsedRealtime() - item.lastBreak))
+                .build());
+        item = LearnSessionItem.setLastBreak(item, SystemClock.elapsedRealtime());
+        item = LearnSessionItem.setState(item, IN_SESSION);
+        drawView(item);
+    }
+
+    public SessionEnum getStatus() {
+        return item.state;
     }
 }

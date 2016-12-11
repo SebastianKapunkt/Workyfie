@@ -1,26 +1,29 @@
 package workyfie.github.de.workyfie.presentation.page.mainpage;
 
 import android.content.Context;
-import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 
 import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
 
 import workyfie.github.de.workyfie.R;
 import workyfie.github.de.workyfie.application.AnalyticsApplication;
 import workyfie.github.de.workyfie.presentation.page.learnsession.LearnSessionFragment;
 import workyfie.github.de.workyfie.presentation.page.sensor.SensorFragment;
+import workyfie.github.de.workyfie.presentation.page.sensorstatus.SensorStatusFragment;
 
-public class MainPagerAdapter extends FragmentPagerAdapter implements ViewPager.OnPageChangeListener{
+public class MainPagerAdapter extends FragmentPagerAdapter implements ViewPager.OnPageChangeListener {
 
     private Context context;
+    private Tracker tracker;
 
-    public MainPagerAdapter(FragmentManager fm, Context context) {
+    public MainPagerAdapter(FragmentManager fm, Context context, Tracker tracker) {
         super(fm);
         this.context = context;
+        this.tracker = tracker;
     }
 
     @Override
@@ -29,9 +32,9 @@ public class MainPagerAdapter extends FragmentPagerAdapter implements ViewPager.
             case 0:
                 return LearnSessionFragment.newInstance();
             case 1:
-                return SensorFragment.newInstance();
+                return SensorStatusFragment.newInstance();
             case 2:
-                return MainActivity.PlaceholderFragment.newInstance(position);
+                return SensorFragment.newInstance();
             default:
                 return MainActivity.PlaceholderFragment.newInstance(position);
         }
@@ -43,9 +46,9 @@ public class MainPagerAdapter extends FragmentPagerAdapter implements ViewPager.
             case 0:
                 return context.getString(R.string.session);
             case 1:
-                return context.getString(R.string.sensor);
-            case 2:
                 return "information";
+            case 2:
+                return context.getString(R.string.sensor);
             default:
                 return "error";
         }
@@ -63,8 +66,8 @@ public class MainPagerAdapter extends FragmentPagerAdapter implements ViewPager.
 
     @Override
     public void onPageSelected(int position) {
-        AnalyticsApplication.mTracker.setScreenName(String.valueOf(getPageTitle(position)));
-        AnalyticsApplication.mTracker.send(new HitBuilders.ScreenViewBuilder().build());
+        tracker.setScreenName((String) getPageTitle(position));
+        tracker.send(new HitBuilders.ScreenViewBuilder().build());
     }
 
     @Override

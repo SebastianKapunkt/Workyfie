@@ -11,9 +11,9 @@ public class LearnSessionItem {
         this.lastBreak = lastBreak;
     }
 
-    public static LearnSessionItem setState(LearnSessionItem item, SessionEnum outSession) {
+    public static LearnSessionItem setState(LearnSessionItem item, SessionEnum sessionState) {
         return new LearnSessionItem(
-                outSession,
+                sessionState,
                 item.sessionStartTime,
                 item.lastBreak);
     }
@@ -30,6 +30,14 @@ public class LearnSessionItem {
                 item.state,
                 item.sessionStartTime,
                 lastBreak
+        );
+    }
+
+    public static LearnSessionItem reset() {
+        return new LearnSessionItem(
+                SessionEnum.OUT_SESSION,
+                0,
+                0
         );
     }
 }

@@ -16,6 +16,7 @@ import android.widget.Chronometer;
 import workyfie.github.de.workyfie.R;
 import workyfie.github.de.workyfie.application.AnalyticsApplication;
 import workyfie.github.de.workyfie.data.presentation.session.LearnSessionItem;
+import workyfie.github.de.workyfie.data.presentation.session.SessionEnum;
 
 public class LearnSessionFragment extends Fragment implements LearnSessionView, View.OnClickListener, Chronometer.OnChronometerTickListener {
     public static final String TAG = LearnSessionFragment.class.getSimpleName();
@@ -100,21 +101,18 @@ public class LearnSessionFragment extends Fragment implements LearnSessionView, 
 
     @Override
     public void showNoSession() {
-        toggleSession.setText(R.string.start_session);
         information_area.setVisibility(View.GONE);
         activity.setVisibility(View.GONE);
     }
 
     @Override
     public void showInSession() {
-        toggleSession.setText(R.string.stop_session);
         information_area.setVisibility(View.VISIBLE);
         activity.setVisibility(View.VISIBLE);
     }
 
     @Override
     public void startSessionChronometer(long sessionStartTime) {
-        Log.i(TAG, "" + SystemClock.elapsedRealtime());
         sessionChronometer.setBase(sessionStartTime);
         sessionChronometer.start();
         sessionChronometer.setOnChronometerTickListener(this);
@@ -127,6 +125,7 @@ public class LearnSessionFragment extends Fragment implements LearnSessionView, 
     }
 
     private void stopLastBreakChronometer() {
+        breakChronometer.setBase(SystemClock.elapsedRealtime());
         breakChronometer.stop();
     }
 
@@ -142,18 +141,25 @@ public class LearnSessionFragment extends Fragment implements LearnSessionView, 
                 showInSession();
                 startSessionChronometer(item.sessionStartTime);
                 startLastBreakChronometer(item.lastBreak);
+                toggleSession.setText(R.string.stop_session);
                 break;
             case OUT_SESSION:
                 showNoSession();
                 stopSessionChronometer();
                 stopLastBreakChronometer();
+                toggleSession.setText(R.string.start_session);
+                break;
+            case BREAK:
+                showInSession();
+                stopLastBreakChronometer();
+                toggleSession.setText(R.string.continue_session);
                 break;
         }
     }
 
     @Override
     public void onChronometerTick(Chronometer chronometer) {
-        if ((SystemClock.elapsedRealtime() - chronometer.getBase()) % 10000 < 1000 && SystemClock.elapsedRealtime() - chronometer.getBase() > 0) {
+        if ((SystemClock.elapsedRealtime() - chronometer.getBase()) % 30000 < 1000 && (SystemClock.elapsedRealtime() - chronometer.getBase()) > 500 && !presenter.getStatus().equals(SessionEnum.BREAK)) {
             Log.i(TAG, " NOW ");
             if (alertDialog != null) {
                 alertDialog.dismiss();
