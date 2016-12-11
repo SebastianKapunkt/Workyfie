@@ -5,12 +5,16 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.view.ViewPager;
+
+import com.google.android.gms.analytics.HitBuilders;
 
 import workyfie.github.de.workyfie.R;
+import workyfie.github.de.workyfie.application.AnalyticsApplication;
 import workyfie.github.de.workyfie.presentation.page.learnsession.LearnSessionFragment;
 import workyfie.github.de.workyfie.presentation.page.sensor.SensorFragment;
 
-public class MainPagerAdapter extends FragmentPagerAdapter {
+public class MainPagerAdapter extends FragmentPagerAdapter implements ViewPager.OnPageChangeListener{
 
     private Context context;
 
@@ -50,5 +54,21 @@ public class MainPagerAdapter extends FragmentPagerAdapter {
     @Override
     public int getCount() {
         return 3;
+    }
+
+    @Override
+    public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+    }
+
+    @Override
+    public void onPageSelected(int position) {
+        AnalyticsApplication.mTracker.setScreenName(String.valueOf(getPageTitle(position)));
+        AnalyticsApplication.mTracker.send(new HitBuilders.ScreenViewBuilder().build());
+    }
+
+    @Override
+    public void onPageScrollStateChanged(int state) {
+
     }
 }

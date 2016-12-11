@@ -14,6 +14,7 @@ import android.widget.Button;
 import android.widget.Chronometer;
 
 import workyfie.github.de.workyfie.R;
+import workyfie.github.de.workyfie.application.AnalyticsApplication;
 import workyfie.github.de.workyfie.data.presentation.session.LearnSessionItem;
 
 public class LearnSessionFragment extends Fragment implements LearnSessionView, View.OnClickListener, Chronometer.OnChronometerTickListener {
@@ -39,7 +40,7 @@ public class LearnSessionFragment extends Fragment implements LearnSessionView, 
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        presenter = new LearnSessionPresenter();
+        presenter = new LearnSessionPresenter(((AnalyticsApplication)getActivity().getApplication()).getDefaultTracker());
     }
 
     @Nullable

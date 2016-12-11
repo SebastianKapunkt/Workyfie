@@ -1,0 +1,38 @@
+{
+  "project_info": {
+    "project_number": "937334883853",
+    "project_id": "workyfie"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:937334883853:android:2c0a6946f3e07321",
+        "android_client_info": {
+          "package_name": "workyfie.github.de.workyfie"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBeIfSfQXSYteAknWvu6z_KWZDwG1WNDxk"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 2,
+          "analytics_property": {
+            "tracking_id": "UA-88591255-1"
+          }
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 1
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

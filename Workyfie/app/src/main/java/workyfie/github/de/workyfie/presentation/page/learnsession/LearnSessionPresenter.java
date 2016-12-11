@@ -2,6 +2,10 @@ package workyfie.github.de.workyfie.presentation.page.learnsession;
 
 import android.os.SystemClock;
 
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
+
+import workyfie.github.de.workyfie.application.AnalyticsApplication;
 import workyfie.github.de.workyfie.data.presentation.session.LearnSessionItem;
 import workyfie.github.de.workyfie.presentation.mvp.Presenter;
 
@@ -12,9 +16,11 @@ public class LearnSessionPresenter implements Presenter<LearnSessionView> {
 
     private LearnSessionView view;
     private LearnSessionItem item;
+    private Tracker tracker;
 
-    public LearnSessionPresenter() {
+    public LearnSessionPresenter(Tracker tracker) {
         item = new LearnSessionItem(OUT_SESSION, SystemClock.elapsedRealtime(), SystemClock.elapsedRealtime());
+        this.tracker = tracker;
     }
 
     @Override
@@ -36,11 +42,22 @@ public class LearnSessionPresenter implements Presenter<LearnSessionView> {
         item = LearnSessionItem.setSessionStartTime(item, SystemClock.elapsedRealtime());
         item = LearnSessionItem.setLastBreak(item, SystemClock.elapsedRealtime());
         drawView(item);
+        tracker.send(new HitBuilders.EventBuilder()
+                .setCategory("Session")
+                .setAction("Started")
+                .setLabel(AnalyticsApplication.formatInterval(item.sessionStartTime))
+                .setValue(1)
+                .build());
     }
 
     private void stopSession() {
         item = LearnSessionItem.setState(item, OUT_SESSION);
         drawView(item);
+        tracker.send(new HitBuilders.EventBuilder()
+                .setCategory("Session")
+                .setAction("Stopped")
+                .setLabel(AnalyticsApplication.formatInterval(SystemClock.elapsedRealtime() - item.sessionStartTime))
+                .build());
     }
 
     public void requestContent() {
@@ -48,6 +65,11 @@ public class LearnSessionPresenter implements Presenter<LearnSessionView> {
     }
 
     public void makeABreak() {
+        tracker.send(new HitBuilders.EventBuilder()
+                .setCategory("Session")
+                .setAction("Break")
+                .setLabel(AnalyticsApplication.formatInterval(SystemClock.elapsedRealtime() - item.lastBreak))
+                .build());
         item = LearnSessionItem.setLastBreak(item, SystemClock.elapsedRealtime());
         drawView(item);
     }

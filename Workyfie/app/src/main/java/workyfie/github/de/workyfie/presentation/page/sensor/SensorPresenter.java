@@ -1,25 +1,19 @@
 package workyfie.github.de.workyfie.presentation.page.sensor;
 
-import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Parcelable;
-import android.util.Log;
 
 import info.plux.pluxapi.Communication;
 import info.plux.pluxapi.Constants;
-import info.plux.pluxapi.bitalino.BITalino;
 import info.plux.pluxapi.bitalino.BITalinoCommunication;
 import info.plux.pluxapi.bitalino.BITalinoCommunicationFactory;
 import info.plux.pluxapi.bitalino.BITalinoDescription;
 import info.plux.pluxapi.bitalino.BITalinoException;
 import info.plux.pluxapi.bitalino.BITalinoFrame;
 import info.plux.pluxapi.bitalino.BITalinoState;
-import info.plux.pluxapi.bitalino.bth.OnBITalinoDataAvailable;
-import workyfie.github.de.workyfie.R;
 import workyfie.github.de.workyfie.presentation.mvp.Presenter;
 
 import static info.plux.pluxapi.Constants.ACTION_COMMAND_REPLY;
@@ -31,10 +25,6 @@ import static info.plux.pluxapi.Constants.EXTRA_COMMAND_REPLY;
 import static info.plux.pluxapi.Constants.EXTRA_DATA;
 import static info.plux.pluxapi.Constants.EXTRA_STATE_CHANGED;
 import static info.plux.pluxapi.Constants.IDENTIFIER;
-
-/**
- * Created by insanemac on 10.12.16.
- */
 
 public class SensorPresenter implements Presenter<SensorView> {
     private final String MAC_ADRESS = "B0:B4:48:F0:C6:8A";
