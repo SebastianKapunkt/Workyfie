@@ -12,10 +12,6 @@ import workyfie.github.de.workyfie.presentation.mvp.PresenterView;
 
 public interface SensorView extends PresenterView {
 
-    Context getBaseContext();
-
-    Activity getActivity();
-
     void connected();
 
     void err(String msg);

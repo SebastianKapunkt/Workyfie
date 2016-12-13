@@ -6,27 +6,25 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.content.IntentFilter;
-import android.os.*;
 import android.widget.TextView;
 
-import info.plux.pluxapi.bitalino.*;
 import static info.plux.pluxapi.Constants.*;
 
-import info.plux.pluxapi.bitalino.bth.OnBITalinoDataAvailable;
+import info.plux.pluxapi.Constants;
+import info.plux.pluxapi.bitalino.BITalinoDescription;
+import info.plux.pluxapi.bitalino.BITalinoFrame;
+import info.plux.pluxapi.bitalino.BITalinoState;
 import workyfie.github.de.workyfie.R;
+import workyfie.github.de.workyfie.application.WorkyfieFactory;
 
-/**
- * Created by insanemac on 10.12.16.
- */
-
-public class SensorFragment extends android.support.v4.app.Fragment implements SensorView{
+public class SensorFragment extends android.support.v4.app.Fragment implements SensorView, View.OnClickListener {
     public static final String TAG = SensorFragment.class.getSimpleName();
 
     private SensorPresenter presenter;
@@ -50,7 +48,7 @@ public class SensorFragment extends android.support.v4.app.Fragment implements S
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        presenter = new SensorPresenter();
+        presenter = new SensorPresenter(WorkyfieFactory.newInstance().getSensorDataRe);
     }
 
     @Nullable
@@ -58,44 +56,20 @@ public class SensorFragment extends android.support.v4.app.Fragment implements S
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.sensor_fragment, container, false);
 
-        initView(rootView);
-
-        setUiElements();
-
-        setListener();
-
-        return rootView;
-    }
-
-    private void initView(View rootView){
         connectSenor = (Button) rootView.findViewById(R.id.connect_sensor);
         toogleRecord = (Button) rootView.findViewById(R.id.toogle_record);
         statusSensor = (TextView) rootView.findViewById(R.id.status_sensor);
         resultSensor = (TextView) rootView.findViewById(R.id.sensor_results);
-    }
 
-    private void setUiElements(){
         connectSenor.setVisibility(View.VISIBLE);
         toogleRecord.setVisibility(View.INVISIBLE);
 
         statusSensor.setText(currentState.name());
         resultSensor.setVisibility(View.INVISIBLE);
+
+        return rootView;
     }
 
-    private void setListener(){
-        connectSenor.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                presenter.connect_sensor();
-            }
-        });
-        toogleRecord.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                presenter.toogleRecord();
-            }
-        });
-    }
     @Override
     public void onStart() {
         super.onStart();
@@ -111,8 +85,17 @@ public class SensorFragment extends android.support.v4.app.Fragment implements S
     }
 
     @Override
-    public Context getBaseContext() {
-        return this.getActivity().getBaseContext();
+    public void onResume() {
+        super.onResume();
+        connectSenor.setOnClickListener(this);
+        toogleRecord.setOnClickListener(this);
+    }
+
+    @Override
+    public void onPause() {
+        connectSenor.setOnClickListener(null);
+        toogleRecord.setOnClickListener(null);
+        super.onPause();
     }
 
     @Override
@@ -120,7 +103,6 @@ public class SensorFragment extends android.support.v4.app.Fragment implements S
         connectSenor.setVisibility(View.INVISIBLE);
         toogleRecord.setVisibility(View.VISIBLE);
         resultSensor.setVisibility(View.VISIBLE);
-
     }
 
     @Override
@@ -151,13 +133,25 @@ public class SensorFragment extends android.support.v4.app.Fragment implements S
 
     @Override
     public void setStatusSensor(States state) {
-        Log.i(TAG, "BITalinoSensor: "  + state.name());
-        statusSensor.setText("BITalinoSensor: "  + state.name());
+        Log.i(TAG, "BITalinoSensor: " + state.name());
+        statusSensor.setText("BITalinoSensor: " + state.name());
     }
 
     @Override
     public void appendSensorData(String data) {
         Log.d(TAG, "BITalinoFrame: " + data);
         resultSensor.setText("BITalinoFrame: " + data + "\n");
+    }
+
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.connect_sensor:
+                presenter.connect_sensor(getContext());
+                break;
+            case R.id.toogle_record:
+                presenter.toogleRecord();
+                break;
+        }
     }
 }

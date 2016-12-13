@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Parcelable;
+import android.util.Log;
 
 import info.plux.pluxapi.Communication;
 import info.plux.pluxapi.Constants;
@@ -14,6 +15,7 @@ import info.plux.pluxapi.bitalino.BITalinoDescription;
 import info.plux.pluxapi.bitalino.BITalinoException;
 import info.plux.pluxapi.bitalino.BITalinoFrame;
 import info.plux.pluxapi.bitalino.BITalinoState;
+import workyfie.github.de.workyfie.data.repository.sensordata.SensorDataRepository;
 import workyfie.github.de.workyfie.presentation.mvp.Presenter;
 
 import static info.plux.pluxapi.Constants.ACTION_COMMAND_REPLY;
@@ -27,15 +29,18 @@ import static info.plux.pluxapi.Constants.EXTRA_STATE_CHANGED;
 import static info.plux.pluxapi.Constants.IDENTIFIER;
 
 public class SensorPresenter implements Presenter<SensorView> {
+    public static final String TAG = SensorPresenter.class.getSimpleName();
     private final String MAC_ADRESS = "B0:B4:48:F0:C6:8A";
     private final int CHANNEL = 0; //A1 --> 0 A2 --> 1
 
     private SensorView view;
     private BITalinoCommunication bitalino;
+    private SensorDataRepository repository;
 
     private boolean isRecording;
 
-    public SensorPresenter(){
+    public SensorPresenter(SensorDataRepository repository) {
+        this.repository = repository;
         isRecording = false;
     }
 
@@ -49,12 +54,12 @@ public class SensorPresenter implements Presenter<SensorView> {
         this.view = null;
     }
 
-    public void connect_sensor(){
+    public void connect_sensor(Context context) {
         //TODO do magic to connect the sensor
         try {
-            bitalino = new BITalinoCommunicationFactory().getCommunication(Communication.BLE, view.getBaseContext());
+            bitalino = new BITalinoCommunicationFactory().getCommunication(Communication.BLE, context);
             bitalino.connect(MAC_ADRESS);
-            view.getActivity().registerReceiver(updateReceiver, makeUpdateIntentFilter());
+            context.registerReceiver(updateReceiver, makeUpdateIntentFilter());
 
             view.connected();
         } catch (BITalinoException e) {
@@ -62,17 +67,19 @@ public class SensorPresenter implements Presenter<SensorView> {
             e.printStackTrace();
         }
     }
-    private void startRecording(){
+
+    private void startRecording() {
         isRecording = true;
         view.showIsRecording();
     }
-    private void stopRecording(){
+
+    private void stopRecording() {
         isRecording = false;
         view.showNoRecording();
     }
 
-    public void toogleRecord(){
-        if(isRecording){
+    public void toogleRecord() {
+        if (isRecording) {
             try {
                 bitalino.stop();
                 stopRecording();
@@ -80,7 +87,7 @@ public class SensorPresenter implements Presenter<SensorView> {
                 view.err("Fehler beim stoppen der Aufzeichnung");
                 e.printStackTrace();
             }
-        }else{
+        } else {
             try {
                 bitalino.start(new int[]{CHANNEL}, 1000);
                 startRecording();
@@ -98,13 +105,13 @@ public class SensorPresenter implements Presenter<SensorView> {
         @Override
         public void onReceive(Context context, Intent intent) {
             final String action = intent.getAction();
-            if(ACTION_STATE_CHANGED.equals(action)){
+            if (ACTION_STATE_CHANGED.equals(action)) {
                 String identifier = intent.getStringExtra(IDENTIFIER);
                 Constants.States state = Constants.States.getStates(intent.getIntExtra(EXTRA_STATE_CHANGED, 0));
 
                 view.setStatusSensor(state);
 
-                switch (state){
+                switch (state) {
                     case NO_CONNECTION:
                         break;
                     case LISTEN:
@@ -125,23 +132,21 @@ public class SensorPresenter implements Presenter<SensorView> {
                         break;
 
                 }
-            }
-            else if(ACTION_DATA_AVAILABLE.equals(action)){
-                if(intent.hasExtra(EXTRA_DATA)){
+            } else if (ACTION_DATA_AVAILABLE.equals(action)) {
+                if (intent.hasExtra(EXTRA_DATA)) {
                     Parcelable parcelable = intent.getParcelableExtra(EXTRA_DATA);
-                    if(parcelable.getClass().equals(BITalinoFrame.class)){ //BITalino
+                    if (parcelable.getClass().equals(BITalinoFrame.class)) { //BITalino
                         BITalinoFrame frame = (BITalinoFrame) parcelable;
-                        view.appendSensorData("AnalogSignal: " + frame.getAnalog(CHANNEL) +  "\n");
+                        Log.i(TAG, "Signal: " + frame.getAnalog(CHANNEL));
+//                        view.appendSensorData(sensorData + "\n");
                     }
                 }
-            }
-            else if(ACTION_COMMAND_REPLY.equals(action)){
-                if(intent.hasExtra(EXTRA_COMMAND_REPLY) && (intent.getParcelableExtra(EXTRA_COMMAND_REPLY) != null)){
+            } else if (ACTION_COMMAND_REPLY.equals(action)) {
+                if (intent.hasExtra(EXTRA_COMMAND_REPLY) && (intent.getParcelableExtra(EXTRA_COMMAND_REPLY) != null)) {
                     Parcelable parcelable = intent.getParcelableExtra(EXTRA_COMMAND_REPLY);
-                    if(parcelable.getClass().equals(BITalinoState.class)){ //BITalino
+                    if (parcelable.getClass().equals(BITalinoState.class)) { //BITalino
                         //view.appendSensorData(parcelable.toString() + "\n");
-                    }
-                    else if(parcelable.getClass().equals(BITalinoDescription.class)){ //BITalino
+                    } else if (parcelable.getClass().equals(BITalinoDescription.class)) { //BITalino
                         //view.appendSensorData("isBITalino2: " + ((BITalinoDescription)parcelable).isBITalino2() + "; FwVersion: " + String.valueOf(((BITalinoDescription)parcelable).getFwVersion()) + "\n");
                     }
                 }
