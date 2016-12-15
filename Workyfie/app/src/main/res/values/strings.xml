@@ -19,4 +19,6 @@
     <string name="sensor_akku">Akku der Sensoren</string>
     <string name="okayish">Ausreichend</string>
     <string name="sensor">Sensoren</string>
+    <string name="disconnect_sensor">Disconnect Sensor</string>
+    <string name="stop_sensor">Stop Record</string>
 </resources>

@@ -16,6 +16,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import workyfie.github.de.workyfie.R;
+import workyfie.github.de.workyfie.WorkyfieFactory;
 import workyfie.github.de.workyfie.application.AnalyticsApplication;
 
 public class MainActivity extends AppCompatActivity {
@@ -49,6 +50,9 @@ public class MainActivity extends AppCompatActivity {
 
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
+
+        //Set Context for Bitalino
+        WorkyfieFactory.getInstance().getApplicationFactory().getBitalino().setContext(getApplicationContext());
     }
 
     @Override

@@ -1,12 +1,8 @@
 package workyfie.github.de.workyfie.presentation.page.sensor;
 
 import android.app.AlertDialog;
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -15,26 +11,39 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
-import static info.plux.pluxapi.Constants.*;
-
-import info.plux.pluxapi.Constants;
-import info.plux.pluxapi.bitalino.BITalinoDescription;
 import info.plux.pluxapi.bitalino.BITalinoFrame;
-import info.plux.pluxapi.bitalino.BITalinoState;
 import workyfie.github.de.workyfie.R;
-import workyfie.github.de.workyfie.application.WorkyfieFactory;
+import workyfie.github.de.workyfie.WorkyfieFactory;
+import workyfie.github.de.workyfie.application.bitalino.reciever.BitalinoCalcDataReciever;
+import workyfie.github.de.workyfie.application.bitalino.reciever.BitalinoUpdateViewReceiver;
+import workyfie.github.de.workyfie.application.bitalino.reciever.IBitalinoReceiverDataCallback;
+import workyfie.github.de.workyfie.application.bitalino.reciever.IBitalinoReceiverStateCallback;
+import workyfie.github.de.workyfie.application.bitalino.state.BitalinoStateConnected;
+import workyfie.github.de.workyfie.application.bitalino.state.BitalinoStateDisconnected;
+import workyfie.github.de.workyfie.application.bitalino.state.BitalinoStateRecording;
+import workyfie.github.de.workyfie.application.bitalino.state.IBitalinoState;
+import workyfie.github.de.workyfie.data.models.SensorData;
+
+import static info.plux.pluxapi.Constants.States;
 
 public class SensorFragment extends android.support.v4.app.Fragment implements SensorView, View.OnClickListener {
     public static final String TAG = SensorFragment.class.getSimpleName();
 
     private SensorPresenter presenter;
+
+    private BitalinoUpdateViewReceiver updateReceiverView;
+    private BitalinoCalcDataReciever updateReceiverCalcData;
+
     private AlertDialog alert;
     private TextView statusSensor;
     private TextView resultSensor;
-    private Button connectSenor;
-    private Button toogleRecord;
 
-    private States currentState = States.DISCONNECTED;
+    private Button connectSenor;
+    private Button disconnectSensor;
+    private Button startRecord;
+    private Button stopRecord;
+
+
 
     public static SensorFragment newInstance() {
         Bundle args = new Bundle();
@@ -48,7 +57,29 @@ public class SensorFragment extends android.support.v4.app.Fragment implements S
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        presenter = new SensorPresenter(WorkyfieFactory.newInstance().getSensorDataRe);
+        presenter = new SensorPresenter(WorkyfieFactory.getInstance().getRepoFactory().getSensorDataRepository(),
+                WorkyfieFactory.getInstance().getApplicationFactory().getBitalino());
+
+        updateReceiverView = new BitalinoUpdateViewReceiver(
+                new IBitalinoReceiverStateCallback() {
+                    @Override
+                    public void callback(States state) {
+                        presenter.handleBroadcastViewState(state);
+                    }
+                },
+                new IBitalinoReceiverDataCallback() {
+                    @Override
+                    public void callback(BITalinoFrame frame) {
+                        presenter.handleBroadcastViewData(frame);
+                    }
+        });
+        updateReceiverCalcData = new BitalinoCalcDataReciever(
+                new IBitalinoReceiverDataCallback() {
+                    @Override
+                    public void callback(BITalinoFrame frame) {
+                        presenter.handleBroadcastCalcData(frame);
+                    }
+        });
     }
 
     @Nullable
@@ -57,15 +88,12 @@ public class SensorFragment extends android.support.v4.app.Fragment implements S
         View rootView = inflater.inflate(R.layout.sensor_fragment, container, false);
 
         connectSenor = (Button) rootView.findViewById(R.id.connect_sensor);
-        toogleRecord = (Button) rootView.findViewById(R.id.toogle_record);
+        disconnectSensor = (Button) rootView.findViewById(R.id.disconnect_sensor);
+        startRecord = (Button) rootView.findViewById(R.id.start_record);
+        stopRecord = (Button) rootView.findViewById(R.id.stop_record);
+
         statusSensor = (TextView) rootView.findViewById(R.id.status_sensor);
         resultSensor = (TextView) rootView.findViewById(R.id.sensor_results);
-
-        connectSenor.setVisibility(View.VISIBLE);
-        toogleRecord.setVisibility(View.INVISIBLE);
-
-        statusSensor.setText(currentState.name());
-        resultSensor.setVisibility(View.INVISIBLE);
 
         return rootView;
     }
@@ -73,40 +101,91 @@ public class SensorFragment extends android.support.v4.app.Fragment implements S
     @Override
     public void onStart() {
         super.onStart();
-        presenter.attach(this);
-        Log.i(TAG, "attach");
-    }
 
-    @Override
-    public void onStop() {
-        Log.i(TAG, "detach");
-        presenter.detach();
-        super.onStop();
+        presenter.attach(this);
+        presenter.requestContent();
+
+        Log.i(TAG, "attach");
     }
 
     @Override
     public void onResume() {
         super.onResume();
+
+        if(presenter.isRecordingData())
+            registerRecieverView();
+
         connectSenor.setOnClickListener(this);
-        toogleRecord.setOnClickListener(this);
+        disconnectSensor.setOnClickListener(this);
+        startRecord.setOnClickListener(this);
+        stopRecord.setOnClickListener(this);
     }
 
     @Override
     public void onPause() {
+        if(presenter.isRecordingData())
+            unregisterReceiverView();
+
         connectSenor.setOnClickListener(null);
-        toogleRecord.setOnClickListener(null);
+        disconnectSensor.setOnClickListener(null);
+        startRecord.setOnClickListener(null);
+        stopRecord.setOnClickListener(null);
+
         super.onPause();
     }
 
     @Override
-    public void connected() {
-        connectSenor.setVisibility(View.INVISIBLE);
-        toogleRecord.setVisibility(View.VISIBLE);
-        resultSensor.setVisibility(View.VISIBLE);
+    public void onStop() {
+        Log.i(TAG, "detach");
+
+        unregisterReceiverView();
+        unregisterReceiverCalcData();
+
+        presenter.detach();
+
+        super.onStop();
     }
 
     @Override
-    public void err(String msg) {
+    public void onDestroy(){
+        unregisterReceiverView();
+        unregisterReceiverCalcData();
+
+        super.onDestroy();
+    }
+
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.connect_sensor:
+                presenter.connect_sensor();
+                break;
+            case R.id.disconnect_sensor:
+                presenter.disconnect_sensor();
+                break;
+            case R.id.start_record:
+                presenter.start_recording();
+                break;
+            case R.id.stop_record:
+                presenter.stop_reording();
+                break;
+        }
+    }
+
+    public void drawState(IBitalinoState state){
+        if(state instanceof BitalinoStateConnected)
+            showIsConnected();
+        else if(state instanceof BitalinoStateDisconnected)
+            showIsDisconnected();
+        else if(state instanceof BitalinoStateRecording)
+            showIsRecording();
+    }
+    public void drawData(SensorData data){
+        resultSensor.setText(data.data + " - " + data.timestamp);
+    }
+
+    @Override
+    public void errMsg(String msg) {
         alert = new AlertDialog.Builder(getContext())
                 .setTitle("Error")
                 .setMessage(msg)
@@ -120,38 +199,52 @@ public class SensorFragment extends android.support.v4.app.Fragment implements S
         alert.show();
     }
 
-    @Override
-    public void showIsRecording() {
-        toogleRecord.setText(R.string.stop_record);
-
+    public void registerRecieverView(){
+        getContext().registerReceiver(updateReceiverView, updateReceiverView.getIntentFilter());
     }
 
-    @Override
-    public void showNoRecording() {
-        toogleRecord.setText(R.string.start_record);
+    public void unregisterReceiverView(){
+        getContext().unregisterReceiver(updateReceiverView);
     }
 
-    @Override
-    public void setStatusSensor(States state) {
-        Log.i(TAG, "BITalinoSensor: " + state.name());
-        statusSensor.setText("BITalinoSensor: " + state.name());
+    public void registerRecieverCalcData(){
+        getContext().registerReceiver(updateReceiverCalcData, updateReceiverCalcData.getIntentFilter());
     }
 
-    @Override
-    public void appendSensorData(String data) {
-        Log.d(TAG, "BITalinoFrame: " + data);
-        resultSensor.setText("BITalinoFrame: " + data + "\n");
+    public void unregisterReceiverCalcData(){
+        getContext().unregisterReceiver(updateReceiverCalcData);
     }
 
-    @Override
-    public void onClick(View view) {
-        switch (view.getId()) {
-            case R.id.connect_sensor:
-                presenter.connect_sensor(getContext());
-                break;
-            case R.id.toogle_record:
-                presenter.toogleRecord();
-                break;
-        }
+    private void showIsConnected(){
+        connectSenor.setVisibility(View.INVISIBLE);
+        disconnectSensor.setVisibility(View.VISIBLE);
+        startRecord.setVisibility(View.VISIBLE);
+        stopRecord.setVisibility(View.INVISIBLE);
+
+        statusSensor.setVisibility(View.VISIBLE);
+        statusSensor.setText("VERBUNDEN");
+        resultSensor.setVisibility(View.INVISIBLE);
+    }
+
+    private void showIsDisconnected(){
+        connectSenor.setVisibility(View.VISIBLE);
+        disconnectSensor.setVisibility(View.INVISIBLE);
+        startRecord.setVisibility(View.INVISIBLE);
+        stopRecord.setVisibility(View.INVISIBLE);
+
+        statusSensor.setVisibility(View.VISIBLE);
+        statusSensor.setText("NICHT VERBUNDEN");
+        resultSensor.setVisibility(View.INVISIBLE);
+    }
+
+    private void showIsRecording(){
+        connectSenor.setVisibility(View.INVISIBLE);
+        disconnectSensor.setVisibility(View.VISIBLE);
+        startRecord.setVisibility(View.INVISIBLE);
+        stopRecord.setVisibility(View.VISIBLE);
+
+        statusSensor.setVisibility(View.VISIBLE);
+        statusSensor.setText("RECORDING");
+        resultSensor.setVisibility(View.VISIBLE);
     }
 }

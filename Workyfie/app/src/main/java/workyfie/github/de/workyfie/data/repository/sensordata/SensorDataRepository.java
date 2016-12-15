@@ -17,6 +17,8 @@ public class SensorDataRepository {
         return cache.get(id);
     }
 
+    public void add(SensorData data){ cache.save(data); }
+
     public List<SensorData> get() {
         return cache.list();
     }

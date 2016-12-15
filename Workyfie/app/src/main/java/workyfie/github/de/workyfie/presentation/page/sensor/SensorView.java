@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.content.Context;
 
 import info.plux.pluxapi.Constants;
+import workyfie.github.de.workyfie.application.bitalino.state.IBitalinoState;
+import workyfie.github.de.workyfie.data.models.SensorData;
 import workyfie.github.de.workyfie.presentation.mvp.PresenterView;
 
 /**
@@ -11,16 +13,17 @@ import workyfie.github.de.workyfie.presentation.mvp.PresenterView;
  */
 
 public interface SensorView extends PresenterView {
+    void drawState(IBitalinoState state);
 
-    void connected();
+    void drawData(SensorData data);
 
-    void err(String msg);
+    void registerRecieverView();
 
-    void showIsRecording();
+    void registerRecieverCalcData();
 
-    void showNoRecording();
+    void unregisterReceiverView();
 
-    void setStatusSensor (Constants.States state);
+    void unregisterReceiverCalcData();
 
-    void appendSensorData(String data);
+    void errMsg(String msg);
 }
