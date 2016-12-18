@@ -10,4 +10,8 @@ public class SensorData {
         this.data = data;
         this.timestamp = timestamp;
     }
+
+    public String toString(){
+        return "Value: "+ data + " timestamp: " + timestamp;
+    }
 }

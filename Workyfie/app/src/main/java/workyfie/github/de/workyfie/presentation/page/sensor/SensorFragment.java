@@ -8,8 +8,13 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ListView;
 import android.widget.TextView;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import info.plux.pluxapi.bitalino.BITalinoFrame;
 import workyfie.github.de.workyfie.R;
@@ -36,7 +41,11 @@ public class SensorFragment extends android.support.v4.app.Fragment implements S
 
     private AlertDialog alert;
     private TextView statusSensor;
-    private TextView resultSensor;
+
+    private List resultSensorData;
+    private ListView resultSensorListView;
+    private ArrayAdapter<SensorData> adapter;
+
 
     private Button connectSenor;
     private Button disconnectSensor;
@@ -59,6 +68,9 @@ public class SensorFragment extends android.support.v4.app.Fragment implements S
 
         presenter = new SensorPresenter(WorkyfieFactory.getInstance().getRepoFactory().getSensorDataRepository(),
                 WorkyfieFactory.getInstance().getApplicationFactory().getBitalino());
+
+        resultSensorData = new ArrayList();
+        adapter = new ArrayAdapter<SensorData>(this.getContext(), android.R.layout.simple_list_item_1, android.R.id.text1, resultSensorData);
 
         updateReceiverView = new BitalinoUpdateViewReceiver(
                 new IBitalinoReceiverStateCallback() {
@@ -93,7 +105,9 @@ public class SensorFragment extends android.support.v4.app.Fragment implements S
         stopRecord = (Button) rootView.findViewById(R.id.stop_record);
 
         statusSensor = (TextView) rootView.findViewById(R.id.status_sensor);
-        resultSensor = (TextView) rootView.findViewById(R.id.sensor_results);
+        resultSensorListView = (ListView) rootView.findViewById(R.id.result_list);
+
+        resultSensorListView.setAdapter(adapter);
 
         return rootView;
     }
@@ -181,7 +195,8 @@ public class SensorFragment extends android.support.v4.app.Fragment implements S
             showIsRecording();
     }
     public void drawData(SensorData data){
-        resultSensor.setText(data.data + " - " + data.timestamp);
+        resultSensorData.add(0, data);
+        adapter.notifyDataSetChanged();
     }
 
     @Override
@@ -223,7 +238,7 @@ public class SensorFragment extends android.support.v4.app.Fragment implements S
 
         statusSensor.setVisibility(View.VISIBLE);
         statusSensor.setText("VERBUNDEN");
-        resultSensor.setVisibility(View.INVISIBLE);
+        resultSensorListView.setVisibility(View.VISIBLE);
     }
 
     private void showIsDisconnected(){
@@ -234,7 +249,7 @@ public class SensorFragment extends android.support.v4.app.Fragment implements S
 
         statusSensor.setVisibility(View.VISIBLE);
         statusSensor.setText("NICHT VERBUNDEN");
-        resultSensor.setVisibility(View.INVISIBLE);
+        resultSensorListView.setVisibility(View.INVISIBLE);
     }
 
     private void showIsRecording(){
@@ -245,6 +260,6 @@ public class SensorFragment extends android.support.v4.app.Fragment implements S
 
         statusSensor.setVisibility(View.VISIBLE);
         statusSensor.setText("RECORDING");
-        resultSensor.setVisibility(View.VISIBLE);
+        resultSensorListView.setVisibility(View.VISIBLE);
     }
 }

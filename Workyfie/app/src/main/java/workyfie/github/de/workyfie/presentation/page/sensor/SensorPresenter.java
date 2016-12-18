@@ -1,5 +1,7 @@
 package workyfie.github.de.workyfie.presentation.page.sensor;
 
+import android.util.Log;
+
 import info.plux.pluxapi.Constants;
 import info.plux.pluxapi.bitalino.BITalinoFrame;
 import workyfie.github.de.workyfie.application.bitalino.BitalinoProxy;
@@ -109,6 +111,7 @@ public class SensorPresenter implements Presenter<SensorView> {
 
     public void handleBroadcastCalcData(BITalinoFrame frame){
         //TODO do magic with DATA
+        Log.i(TAG, String.valueOf(frame.getAnalog(CHANNEL)));
         repository.add(new SensorData("", frame.getAnalog(CHANNEL), System.currentTimeMillis()));
     }
 
