@@ -126,8 +126,7 @@ public class BLECommunication extends BITalinoCommunication {
 
                 if(disconnectFired){
                     close();
-                }
-                else{
+                } else{
                     reconnect();
                 }
 
@@ -422,11 +421,6 @@ public class BLECommunication extends BITalinoCommunication {
                             k = 0;
 
                             buffer = new byte[totalBytes];
-
-                            if (bitatinoFrame.getSequence() - previousSeq != 1 && previousSeq - bitatinoFrame.getSequence() != 0 && Math.abs(previousSeq - bitatinoFrame.getSequence()) != 15) {
-                                int nSeq = bitatinoFrame.getSequence() - previousSeq;
-                                Log.e(TAG, "[" + mBluetoothDeviceAddress + "] " + "Seq: " + nSeq);
-                            }
 
                             lastSampleTimeStamp = Calendar.getInstance().getTimeInMillis();
                             isDataStreaming = true;

@@ -5,6 +5,7 @@ import android.content.Context;
 import info.plux.pluxapi.Communication;
 import info.plux.pluxapi.bitalino.BITalinoCommunication;
 import info.plux.pluxapi.bitalino.BITalinoCommunicationFactory;
+import workyfie.github.de.workyfie.App;
 import workyfie.github.de.workyfie.application.bitalino.state.BitalinoStateDisconnected;
 import workyfie.github.de.workyfie.application.bitalino.state.EBitalinoStateException;
 import workyfie.github.de.workyfie.application.bitalino.state.IBitalinoState;
@@ -12,37 +13,31 @@ import workyfie.github.de.workyfie.application.bitalino.state.IBitalinoState;
 public class BitalinoProxy {
     private static final String TAG = BitalinoProxy.class.getSimpleName();
 
-    private Context context;
-
     private IBitalinoState bitalinoState;
     private BITalinoCommunication biTalinoCommunication;
 
-
-    public BitalinoProxy(){
+    public BitalinoProxy() {
         this.biTalinoCommunication = null;
         bitalinoState = new BitalinoStateDisconnected();
     }
 
-    public void initBitalinoCommunicationBLE(){
+    public void initBitalinoCommunicationBLE(Context context) {
         this.initBitalinoCommunication(context, Communication.BLE);
     }
 
-    public void initBitalinoCommunicationBHE(){
+    public void initBitalinoCommunicationBHE(Context context) {
         this.initBitalinoCommunication(context, Communication.BTH);
     }
 
-    public void setContext(Context context) {
-        this.context = context;
-    }
-    public void setState(IBitalinoState state){
+    public void setState(IBitalinoState state) {
         this.bitalinoState = state;
     }
 
-    public IBitalinoState getBitalinoState(){
+    public IBitalinoState getBitalinoState() {
         return this.bitalinoState;
     }
 
-    public boolean connect_sensor(String macAdresse){
+    public boolean connect_sensor(String macAdresse) {
         try {
             bitalinoState.connect(biTalinoCommunication, macAdresse);
             return true;
@@ -52,7 +47,7 @@ public class BitalinoProxy {
         return false;
     }
 
-    public boolean start_recording(int[] channels, int samplerate){
+    public boolean start_recording(int[] channels, int samplerate) {
         try {
             bitalinoState.start(biTalinoCommunication, channels, samplerate);
             return true;
@@ -62,7 +57,7 @@ public class BitalinoProxy {
         return false;
     }
 
-    public boolean stop_recording(){
+    public boolean stop_recording() {
         try {
             bitalinoState.stop(biTalinoCommunication);
             return true;
@@ -72,7 +67,7 @@ public class BitalinoProxy {
         return false;
     }
 
-    public void disconnect_sensor(){
+    public void disconnect_sensor() {
         try {
             bitalinoState.disconnect(biTalinoCommunication);
         } catch (EBitalinoStateException e) {
@@ -81,12 +76,10 @@ public class BitalinoProxy {
 
     }
 
-    private void initBitalinoCommunication(Context context, Communication communication){
+    private void initBitalinoCommunication(Context context, Communication communication) {
         biTalinoCommunication = new BITalinoCommunicationFactory().getCommunication(communication, context);
         bitalinoState = new BitalinoStateDisconnected();
     }
-
-
 
 
 }
