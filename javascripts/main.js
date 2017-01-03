@@ -2,6 +2,7 @@ function hideall() {
     $('#idee').hide();
     $('#user').hide();
     $('#technicals').hide();
+    $('#buisnessmodel').hide();
 }
 
 $( document ).ready(function() {
@@ -18,6 +19,10 @@ $( document ).ready(function() {
     $('#idee-link').click(function() {
         hideall();
         $('#idee').show();
+    });
+    $('#buisnessmodel-link').click(function () {
+       hideall();
+        $('#buisnessmodel').show();
     });
 
     hideall();
