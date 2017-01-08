@@ -14,14 +14,6 @@ public interface SensorView extends PresenterView {
 
     void drawData(SensorData data);
 
-    void registerRecieverView();
-
-    void registerRecieverCalcData();
-
-    void unregisterReceiverView();
-
-    void unregisterReceiverCalcData();
-
     void errMsg(String msg);
 
     void addGraphData(DataPoint dataPoint);

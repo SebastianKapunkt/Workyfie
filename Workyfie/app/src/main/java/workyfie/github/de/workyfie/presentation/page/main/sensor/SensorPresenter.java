@@ -13,6 +13,7 @@ import rx.Observer;
 import rx.subscriptions.CompositeSubscription;
 import workyfie.github.de.workyfie.application.bitalino.BitalinoProxy;
 import workyfie.github.de.workyfie.application.bitalino.state.BitalinoStateConnected;
+import workyfie.github.de.workyfie.application.bitalino.state.BitalinoStateConnecting;
 import workyfie.github.de.workyfie.application.bitalino.state.BitalinoStateDisconnected;
 import workyfie.github.de.workyfie.application.bitalino.state.BitalinoStateRecording;
 import workyfie.github.de.workyfie.application.bitalino.state.IBitalinoState;
@@ -24,7 +25,7 @@ import workyfie.github.de.workyfie.presentation.mvp.Presenter;
 public class SensorPresenter implements Presenter<SensorView> {
     public static final String TAG = SensorPresenter.class.getSimpleName();
 
-    private final String MAC_ADRESS = "B0:B4:48:F0:CE:CA";
+    private final String MAC_ADRESS = "B0:B4:48:F0:C6:8A";
     private final int CHANNEL = 0; //A1 --> 0 A2 --> 1 "BO:B4:48:F0:CE:CA"
     private final int SAMPLE_RATE = 1000;
 
@@ -62,8 +63,8 @@ public class SensorPresenter implements Presenter<SensorView> {
         return subscription;
     }
 
-    public boolean isRecordingData() {
-        return (bitalino.getBitalinoState() instanceof BitalinoStateRecording);
+    public boolean isSensorConnected() {
+        return (bitalino.getBitalinoState() instanceof BitalinoStateConnected || bitalino.getBitalinoState() instanceof  BitalinoStateRecording);
     }
 
     public void requestContent() {
@@ -72,37 +73,25 @@ public class SensorPresenter implements Presenter<SensorView> {
 
     public void connect_sensor(Context context) {
         bitalino.initBitalinoCommunicationBLE(context);
-        if (bitalino.connect_sensor(MAC_ADRESS)) {
-            view.registerRecieverView();
-            view.registerRecieverCalcData();
-        } else {
+        if (!bitalino.connect_sensor(MAC_ADRESS)) {
             view.errMsg("Fehler beim Verbinden mit dem Sensor. Ist BT eingeschaltet?");
         }
-        drawView(bitalino.getBitalinoState());
     }
 
     public void start_recording() {
         if (!bitalino.start_recording(new int[]{CHANNEL}, SAMPLE_RATE)) {
             view.errMsg("Fehler beim Starten der Aufnahme!");
         }
-        drawView(bitalino.getBitalinoState());
-
     }
 
-    public void stop_reording() {
-        if (!bitalino.stop_recording()) {
-            view.errMsg("Fehler beim Stoppern er Aufnahmen");
-        }
-        drawView(bitalino.getBitalinoState());
+    public void stop_reording(Context context) {
+        //BUG SENSOR beim Recording nicht gestoppt werden, daher erst disconnecten und dann wieder connecten.
+        bitalino.disconnect_sensor();
+        connect_sensor(context);
     }
 
     public void disconnect_sensor() {
         bitalino.disconnect_sensor();
-
-        view.unregisterReceiverView();
-        view.unregisterReceiverCalcData();
-
-        drawView(bitalino.getBitalinoState());
     }
 
     public void handleBroadcastViewState(Constants.States state) {
@@ -114,13 +103,13 @@ public class SensorPresenter implements Presenter<SensorView> {
                 bitalino.setState(new BitalinoStateConnected());
                 break;
             case CONNECTING:
-                bitalino.setState(new BitalinoStateConnected());
+                bitalino.setState(new BitalinoStateConnecting());
                 break;
             case CONNECTED:
                 bitalino.setState(new BitalinoStateConnected());
                 break;
             case ACQUISITION_TRYING:
-                bitalino.setState(new BitalinoStateRecording());
+                bitalino.setState(new BitalinoStateConnected());
                 break;
             case ACQUISITION_OK:
                 bitalino.setState(new BitalinoStateRecording());

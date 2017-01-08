@@ -20,11 +20,14 @@ import com.jjoe64.graphview.series.LineGraphSeries;
 import java.util.ArrayList;
 import java.util.List;
 
+import info.plux.pluxapi.bitalino.BITalinoFrame;
+import info.plux.pluxapi.bitalino.bth.OnBITalinoDataAvailable;
 import workyfie.github.de.workyfie.App;
 import workyfie.github.de.workyfie.R;
 import workyfie.github.de.workyfie.application.bitalino.reciever.BitalinoCalcDataReciever;
 import workyfie.github.de.workyfie.application.bitalino.reciever.BitalinoUpdateViewReceiver;
 import workyfie.github.de.workyfie.application.bitalino.state.BitalinoStateConnected;
+import workyfie.github.de.workyfie.application.bitalino.state.BitalinoStateConnecting;
 import workyfie.github.de.workyfie.application.bitalino.state.BitalinoStateDisconnected;
 import workyfie.github.de.workyfie.application.bitalino.state.BitalinoStateRecording;
 import workyfie.github.de.workyfie.application.bitalino.state.IBitalinoState;
@@ -33,7 +36,7 @@ import workyfie.github.de.workyfie.data.models.SensorData;
 public class SensorFragment extends android.support.v4.app.Fragment
         implements SensorView,
         View.OnClickListener,
-        Chronometer.OnChronometerTickListener {
+        Chronometer.OnChronometerTickListener{
     public static final String TAG = SensorFragment.class.getSimpleName();
 
     private SensorPresenter presenter;
@@ -55,6 +58,8 @@ public class SensorFragment extends android.support.v4.app.Fragment
     private LineGraphSeries<DataPoint> series;
 
     private List<SensorData> resultSensorData;
+
+    private boolean tryConnecting;
 
     public static SensorFragment newInstance() {
         Bundle args = new Bundle();
@@ -110,6 +115,8 @@ public class SensorFragment extends android.support.v4.app.Fragment
         graphView.getViewport().setMinX(0);
         graphView.getViewport().setMaxX(40);
 
+        tryConnecting = false;
+
         return rootView;
     }
 
@@ -120,6 +127,8 @@ public class SensorFragment extends android.support.v4.app.Fragment
         presenter.attach(this);
         presenter.requestContent();
 
+        registerRecieverCalcData();
+
         Log.i(TAG, "attach");
     }
 
@@ -127,9 +136,7 @@ public class SensorFragment extends android.support.v4.app.Fragment
     public void onResume() {
         super.onResume();
 
-        if (presenter.isRecordingData()) {
-            registerRecieverView();
-        }
+        registerRecieverView();
 
         connectSenor.setOnClickListener(this);
         disconnectSensor.setOnClickListener(this);
@@ -140,9 +147,7 @@ public class SensorFragment extends android.support.v4.app.Fragment
 
     @Override
     public void onPause() {
-        if (presenter.isRecordingData()) {
-            unregisterReceiverView();
-        }
+        unregisterReceiverView();
 
         connectSenor.setOnClickListener(null);
         disconnectSensor.setOnClickListener(null);
@@ -157,20 +162,11 @@ public class SensorFragment extends android.support.v4.app.Fragment
     public void onStop() {
         Log.i(TAG, "detach");
 
-        unregisterReceiverView();
         unregisterReceiverCalcData();
 
         presenter.detach();
 
         super.onStop();
-    }
-
-    @Override
-    public void onDestroy() {
-        unregisterReceiverView();
-        unregisterReceiverCalcData();
-
-        super.onDestroy();
     }
 
     @Override
@@ -186,7 +182,7 @@ public class SensorFragment extends android.support.v4.app.Fragment
                 presenter.start_recording();
                 break;
             case R.id.stop_record:
-                presenter.stop_reording();
+                presenter.stop_reording(getContext());
                 break;
         }
     }
@@ -198,6 +194,8 @@ public class SensorFragment extends android.support.v4.app.Fragment
             showIsDisconnected();
         } else if (state instanceof BitalinoStateRecording) {
             showIsRecording();
+        } else if (state instanceof BitalinoStateConnecting){
+            showIsConnecting();
         }
     }
 
@@ -231,11 +229,11 @@ public class SensorFragment extends android.support.v4.app.Fragment
     }
 
     public void unregisterReceiverView() {
-        updateReceiverView = null;
+        getContext().unregisterReceiver(updateReceiverView);
     }
 
     public void registerRecieverCalcData() {
-        updateReceiverCalcData = null;
+        getContext().registerReceiver(updateReceiverCalcData, updateReceiverCalcData.getIntentFilter());
     }
 
     public void unregisterReceiverCalcData() {
@@ -246,22 +244,45 @@ public class SensorFragment extends android.support.v4.app.Fragment
         connectSenor.setVisibility(View.INVISIBLE);
         disconnectSensor.setVisibility(View.VISIBLE);
         startRecord.setVisibility(View.VISIBLE);
-        stopRecord.setVisibility(View.INVISIBLE);
 
         statusSensor.setVisibility(View.VISIBLE);
         statusSensor.setText("VERBUNDEN");
         resultSensorListView.setVisibility(View.VISIBLE);
+
+        tryConnecting = false;
     }
 
     private void showIsDisconnected() {
         connectSenor.setVisibility(View.VISIBLE);
+        connectSenor.setEnabled(true);
         disconnectSensor.setVisibility(View.INVISIBLE);
         startRecord.setVisibility(View.INVISIBLE);
         stopRecord.setVisibility(View.INVISIBLE);
-
         statusSensor.setVisibility(View.VISIBLE);
         statusSensor.setText("NICHT VERBUNDEN");
         resultSensorListView.setVisibility(View.INVISIBLE);
+    }
+    private void showIsConnecting(){
+        connectSenor.setEnabled(false);
+        disconnectSensor.setVisibility(View.INVISIBLE);
+        startRecord.setVisibility(View.INVISIBLE);
+        stopRecord.setVisibility(View.INVISIBLE);
+        statusSensor.setVisibility(View.VISIBLE);
+        statusSensor.setText("Verbinde Sensor....");
+        resultSensorListView.setVisibility(View.INVISIBLE);
+
+        //handle Timout connecting
+        tryConnecting = true;
+        new android.os.Handler().postDelayed(
+                () -> {
+                    if(!presenter.isSensorConnected() && tryConnecting){
+                        errMsg("Fehler beim Verbinden zum Sensor! Ist der Sensor eingeschaltet?");
+                        tryConnecting = false;
+                        showIsDisconnected();
+                    }
+                },
+                15000);
+
     }
 
     private void showIsRecording() {
@@ -269,7 +290,6 @@ public class SensorFragment extends android.support.v4.app.Fragment
         disconnectSensor.setVisibility(View.VISIBLE);
         startRecord.setVisibility(View.INVISIBLE);
         stopRecord.setVisibility(View.VISIBLE);
-
         statusSensor.setVisibility(View.VISIBLE);
         statusSensor.setText("RECORDING");
         resultSensorListView.setVisibility(View.VISIBLE);
