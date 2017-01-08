@@ -24,7 +24,6 @@ import android.os.Parcelable;
 import android.util.Log;
 import info.plux.pluxapi.CommandArguments;
 import info.plux.pluxapi.bitalino.*;
-import info.plux.pluxapi.bitalino.CommandDecoder;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -204,7 +203,7 @@ public class BTHCommunication extends BITalinoCommunication {
     @Override
     protected boolean setFreq(int sampleRate) throws BITalinoException {
         CommandArguments commandArguments = new CommandArguments();
-        commandArguments.setSampleRate(validateSampleRate(sampleRate));
+        commandArguments.setSampleRate(validateSampleRate(1000));
 
         byte[] command = BITalino.SET_FREQ.getCommand(commandArguments).command;
 

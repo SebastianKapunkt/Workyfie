@@ -13,12 +13,14 @@ import android.annotation.TargetApi;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.bluetooth.*;
-import android.content.*;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Build;
 import android.util.Log;
 import info.plux.pluxapi.CommandArguments;
 import info.plux.pluxapi.bitalino.*;
-import info.plux.pluxapi.bitalino.BITalinoDescription;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -126,7 +128,8 @@ public class BLECommunication extends BITalinoCommunication {
 
                 if(disconnectFired){
                     close();
-                } else{
+                }
+                else{
                     reconnect();
                 }
 
@@ -421,6 +424,11 @@ public class BLECommunication extends BITalinoCommunication {
                             k = 0;
 
                             buffer = new byte[totalBytes];
+
+                            if (bitatinoFrame.getSequence() - previousSeq != 1 && previousSeq - bitatinoFrame.getSequence() != 0 && Math.abs(previousSeq - bitatinoFrame.getSequence()) != 15) {
+                                int nSeq = bitatinoFrame.getSequence() - previousSeq;
+                                Log.e(TAG, "[" + mBluetoothDeviceAddress + "] " + "Seq: " + nSeq);
+                            }
 
                             lastSampleTimeStamp = Calendar.getInstance().getTimeInMillis();
                             isDataStreaming = true;
