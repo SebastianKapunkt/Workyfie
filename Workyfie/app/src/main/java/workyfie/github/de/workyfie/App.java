@@ -2,6 +2,7 @@ package workyfie.github.de.workyfie;
 
 import android.app.Application;
 
+import io.realm.Realm;
 import workyfie.github.de.workyfie.application.ApplicationComponent;
 
 public class App extends Application {
@@ -24,6 +25,7 @@ public class App extends Application {
         super.onCreate();
         instance = this;
         applicationComponent = new ApplicationComponent(instance);
+        Realm.init(this);
     }
 
     public static App getApplication() {

@@ -10,6 +10,7 @@ buildscript {
         classpath gradlePlugins.android
         classpath gradlePlugins.apt
         classpath gradlePlugins.retrolambda
+        classpath "io.realm:realm-gradle-plugin:2.2.2"
     }
 }
 

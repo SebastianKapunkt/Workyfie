@@ -20,8 +20,6 @@ import com.jjoe64.graphview.series.LineGraphSeries;
 import java.util.ArrayList;
 import java.util.List;
 
-import info.plux.pluxapi.bitalino.BITalinoFrame;
-import info.plux.pluxapi.bitalino.bth.OnBITalinoDataAvailable;
 import workyfie.github.de.workyfie.App;
 import workyfie.github.de.workyfie.R;
 import workyfie.github.de.workyfie.application.bitalino.reciever.BitalinoCalcDataReciever;
@@ -76,8 +74,8 @@ public class SensorFragment extends android.support.v4.app.Fragment
         presenter = new SensorPresenter(
                 App.getComponent().getThreadingModule(),
                 App.getComponent().getSensorDataRepository(),
-                App.getComponent().getBitalinoProxy()
-        );
+                App.getComponent().getBitalinoProxy(),
+                App.getComponent().getSessionRepository());
 
         resultSensorData = new ArrayList<>();
         adapter = new ArrayAdapter<>(this.getContext(), android.R.layout.simple_list_item_1, android.R.id.text1, resultSensorData);
@@ -162,11 +160,16 @@ public class SensorFragment extends android.support.v4.app.Fragment
     public void onStop() {
         Log.i(TAG, "detach");
 
-        unregisterReceiverCalcData();
-
         presenter.detach();
 
         super.onStop();
+    }
+
+    @Override
+    public void onDestroy(){
+        unregisterReceiverCalcData();
+
+        super.onDestroy();
     }
 
     @Override
@@ -225,19 +228,19 @@ public class SensorFragment extends android.support.v4.app.Fragment
     }
 
     public void registerRecieverView() {
-        getContext().registerReceiver(updateReceiverView, updateReceiverView.getIntentFilter());
+        getActivity().registerReceiver(updateReceiverView, updateReceiverView.getIntentFilter());
     }
 
     public void unregisterReceiverView() {
-        getContext().unregisterReceiver(updateReceiverView);
+        getActivity().unregisterReceiver(updateReceiverView);
     }
 
     public void registerRecieverCalcData() {
-        getContext().registerReceiver(updateReceiverCalcData, updateReceiverCalcData.getIntentFilter());
+        getActivity().registerReceiver(updateReceiverCalcData, updateReceiverCalcData.getIntentFilter());
     }
 
     public void unregisterReceiverCalcData() {
-        getContext().unregisterReceiver(updateReceiverCalcData);
+        getActivity().unregisterReceiver(updateReceiverCalcData);
     }
 
     private void showIsConnected() {

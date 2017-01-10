@@ -4,7 +4,9 @@ import workyfie.github.de.workyfie.App;
 import workyfie.github.de.workyfie.application.bitalino.BitalinoProxy;
 import workyfie.github.de.workyfie.application.modules.DataModule;
 import workyfie.github.de.workyfie.application.modules.ThreadingModule;
+import workyfie.github.de.workyfie.data.repos.graphdatapoint.GraphDataPointRepository;
 import workyfie.github.de.workyfie.data.repos.sensordata.SensorDataRepository;
+import workyfie.github.de.workyfie.data.repos.session.SessionRepository;
 
 /**
  * hold the modules for the app
@@ -15,6 +17,8 @@ public class ApplicationComponent {
     private ThreadingModule threadingModule;
 
     private SensorDataRepository sensorDataRepository;
+    private GraphDataPointRepository graphDataPointRepository;
+    private SessionRepository sessionRepository;
     private BitalinoProxy bitalinoProxy;
 
     public ApplicationComponent(App app) {
@@ -42,5 +46,19 @@ public class ApplicationComponent {
             bitalinoProxy = dataModule.provideBitalinoProxy();
         }
         return bitalinoProxy;
+    }
+
+    public SessionRepository getSessionRepository() {
+        if (sessionRepository == null) {
+            sessionRepository = dataModule.provideSessionRepository();
+        }
+        return sessionRepository;
+    }
+
+    public GraphDataPointRepository getGraphDataPointRepository() {
+        if (graphDataPointRepository == null) {
+            graphDataPointRepository = dataModule.provideGrapDataPointRepository();
+        }
+        return graphDataPointRepository;
     }
 }

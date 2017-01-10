@@ -1,11 +1,14 @@
 package workyfie.github.de.workyfie.presentation.page.main.sensor;
 
 import android.content.Context;
+import android.nfc.Tag;
 import android.util.Log;
 
 import com.jjoe64.graphview.series.DataPoint;
 import com.jjoe64.graphview.series.LineGraphSeries;
 
+
+import org.threeten.bp.Instant;
 
 import info.plux.pluxapi.Constants;
 import info.plux.pluxapi.bitalino.BITalinoFrame;
@@ -20,6 +23,8 @@ import workyfie.github.de.workyfie.application.bitalino.state.IBitalinoState;
 import workyfie.github.de.workyfie.application.modules.ThreadingModule;
 import workyfie.github.de.workyfie.data.models.SensorData;
 import workyfie.github.de.workyfie.data.repos.sensordata.SensorDataRepository;
+import workyfie.github.de.workyfie.data.repos.session.SessionRepository;
+import workyfie.github.de.workyfie.data.view.models.Session;
 import workyfie.github.de.workyfie.presentation.mvp.Presenter;
 
 public class SensorPresenter implements Presenter<SensorView> {
@@ -37,11 +42,13 @@ public class SensorPresenter implements Presenter<SensorView> {
 
     private CompositeSubscription subscription;
     private final ThreadingModule threadingModule;
+    private SessionRepository sessionRepository;
 
-    public SensorPresenter(ThreadingModule threadingModule, SensorDataRepository repository, BitalinoProxy bitalino) {
+    public SensorPresenter(ThreadingModule threadingModule, SensorDataRepository repository, BitalinoProxy bitalino, SessionRepository sessionRepository) {
         this.threadingModule = threadingModule;
         this.repository = repository;
         this.bitalino = bitalino;
+        this.sessionRepository = sessionRepository;
     }
 
     @Override
@@ -64,11 +71,53 @@ public class SensorPresenter implements Presenter<SensorView> {
     }
 
     public boolean isSensorConnected() {
-        return (bitalino.getBitalinoState() instanceof BitalinoStateConnected || bitalino.getBitalinoState() instanceof  BitalinoStateRecording);
+        return (bitalino.getBitalinoState() instanceof BitalinoStateConnected || bitalino.getBitalinoState() instanceof BitalinoStateRecording);
     }
 
     public void requestContent() {
         drawView(bitalino.getBitalinoState());
+        subscription().add(
+                sessionRepository.save(new Session("", "name", Instant.now(), Instant.now()))
+                        .subscribeOn(threadingModule.getIOScheduler())
+                        .observeOn(threadingModule.getMainScheduler())
+                        .subscribe(new Observer<Session>() {
+                                       @Override
+                                       public void onCompleted() {
+                                           Log.i(TAG, "requestContent onCompleted");
+                                       }
+
+                                       @Override
+                                       public void onError(Throwable e) {
+                                           e.printStackTrace();
+                                       }
+
+                                       @Override
+                                       public void onNext(Session session) {
+                                           Log.i(TAG, "id " + session.id);
+                                       }
+                                   }
+                        ));
+        subscription().add(
+                sessionRepository.get("1")
+                        .subscribeOn(threadingModule.getIOScheduler())
+                        .observeOn(threadingModule.getMainScheduler())
+                        .subscribe(new Observer<Session>() {
+                                       @Override
+                                       public void onCompleted() {
+                                           Log.i(TAG, "requestContent onCompleted");
+                                       }
+
+                                       @Override
+                                       public void onError(Throwable e) {
+                                           e.printStackTrace();
+                                       }
+
+                                       @Override
+                                       public void onNext(Session session) {
+                                           Log.i(TAG, "id " + session.id + " time: " + session.startTime.toString());
+                                       }
+                                   }
+                        ));
     }
 
     public void connect_sensor(Context context) {
