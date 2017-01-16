@@ -12,4 +12,13 @@ public class GraphDataPoint {
         this.x = x;
         this.y = y;
     }
+
+    public static GraphDataPoint setId(GraphDataPoint graphDataPoint, String nextKey) {
+        return new GraphDataPoint(
+                nextKey,
+                graphDataPoint.sessionId,
+                graphDataPoint.x,
+                graphDataPoint.y
+        );
+    }
 }

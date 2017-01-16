@@ -1,8 +1,8 @@
 package workyfie.github.de.workyfie.application.modules;
 
-import io.realm.Realm;
 import workyfie.github.de.workyfie.App;
 import workyfie.github.de.workyfie.application.bitalino.BitalinoProxy;
+import workyfie.github.de.workyfie.data.repos.graphdatapoint.GrapDataPointTempDataSource;
 import workyfie.github.de.workyfie.data.repos.graphdatapoint.GraphDataPointCacheDataSource;
 import workyfie.github.de.workyfie.data.repos.graphdatapoint.GraphDataPointPersistanceDataSource;
 import workyfie.github.de.workyfie.data.repos.graphdatapoint.GraphDataPointRepository;
@@ -44,7 +44,7 @@ public class DataModule {
     public GraphDataPointRepository provideGrapDataPointRepository() {
         return new GraphDataPointRepository(
                 new GraphDataPointPersistanceDataSource(),
-                new GraphDataPointCacheDataSource()
-        );
+                new GraphDataPointCacheDataSource(),
+                new GrapDataPointTempDataSource());
     }
 }
