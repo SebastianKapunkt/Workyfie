@@ -15,8 +15,8 @@ public class SessionPersistanceViewConverter implements Converter<PersistanceSes
         return new Session(
                 String.valueOf(value.getId()),
                 value.getName(),
-                Instant.parse(value.getStartTime()),
-                Instant.parse(value.getEndTime())
+                value.getStartTime().isEmpty() ? null : Instant.parse(value.getStartTime()),
+                value.getEndTime().isEmpty() ? null : Instant.parse(value.getEndTime())
         );
     }
 
@@ -25,8 +25,8 @@ public class SessionPersistanceViewConverter implements Converter<PersistanceSes
         return new PersistanceSession(
                 Integer.valueOf(value.id),
                 value.name,
-                value.startTime.toString(),
-                value.endTime.toString()
+                value.startTime == null ? "" : value.startTime.toString(),
+                value.endTime == null ? "" : value.endTime.toString()
         );
     }
 

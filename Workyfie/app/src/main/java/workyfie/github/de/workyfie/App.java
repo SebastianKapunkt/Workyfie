@@ -4,12 +4,14 @@ import android.app.Application;
 
 import io.realm.Realm;
 import workyfie.github.de.workyfie.application.ApplicationComponent;
+import workyfie.github.de.workyfie.application.bitalino.config.BitalinoConfig;
+import workyfie.github.de.workyfie.application.bitalino.reciever.BitalinoBroadcastReceiver;
 
 public class App extends Application {
     public static final String TAG = App.class.getSimpleName();
 
     private static App instance;
-    private static String baseUrl = "https://www.deviantart.com";
+    private static BitalinoBroadcastReceiver bitalinoReceiver;
 
     private ApplicationComponent applicationComponent;
 
@@ -26,6 +28,18 @@ public class App extends Application {
         instance = this;
         applicationComponent = new ApplicationComponent(instance);
         Realm.init(this);
+
+        bitalinoReceiver = new BitalinoBroadcastReceiver(App.getComponent().getBitalinoReceiveHandler(),
+                new BitalinoConfig(0, "B0:B4:48:F0:C6:8A", 1000));
+
+        this.registerReceiver(bitalinoReceiver, bitalinoReceiver.getIntentFilter());
+    }
+
+    @Override
+    public void onTerminate() {
+        super.onTerminate();
+
+        this.unregisterReceiver(bitalinoReceiver);
     }
 
     public static App getApplication() {

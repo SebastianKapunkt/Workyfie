@@ -8,6 +8,7 @@ import workyfie.github.de.workyfie.data.persistance.models.PersistanceGraphDataP
 import workyfie.github.de.workyfie.data.persistance.models.PersistanceSession;
 import workyfie.github.de.workyfie.data.persistance.models.converter.GraphDataPointPersistanceViewConverter;
 import workyfie.github.de.workyfie.data.view.models.GraphDataPoint;
+import workyfie.github.de.workyfie.data.view.models.Session;
 
 public class GraphDataPointPersistanceDataSource {
 
@@ -36,11 +37,17 @@ public class GraphDataPointPersistanceDataSource {
                 local = GraphDataPoint.setId(graphDataPoint, getNextKey(realm));
             }
 
-            realm.beginTransaction();
-            realm.copyToRealm(converter.to(local));
-            realm.commitTransaction();
+            try {
+                realm.beginTransaction();
+                realm.copyToRealm(converter.to(local));
+                realm.commitTransaction();
+            } catch (Exception e) {
+                e.printStackTrace();
+                realm.cancelTransaction();
+            }
 
             subscriber.onNext(local);
+
             subscriber.onCompleted();
         });
     }

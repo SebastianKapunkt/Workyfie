@@ -1,6 +1,7 @@
 package workyfie.github.de.workyfie.presentation.page.main.sensor;
 
 import android.app.AlertDialog;
+import android.app.Application;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.util.Log;
@@ -22,25 +23,26 @@ import java.util.List;
 
 import workyfie.github.de.workyfie.App;
 import workyfie.github.de.workyfie.R;
-import workyfie.github.de.workyfie.application.bitalino.reciever.BitalinoCalcDataReciever;
-import workyfie.github.de.workyfie.application.bitalino.reciever.BitalinoUpdateViewReceiver;
+import workyfie.github.de.workyfie.application.bitalino.reciever.BitalinoReceiveHandler;
+import workyfie.github.de.workyfie.application.bitalino.reciever.IBitalinoReceiverDataCallback;
+import workyfie.github.de.workyfie.application.bitalino.reciever.IBitalinoReceiverStateCallback;
 import workyfie.github.de.workyfie.application.bitalino.state.BitalinoStateConnected;
 import workyfie.github.de.workyfie.application.bitalino.state.BitalinoStateConnecting;
 import workyfie.github.de.workyfie.application.bitalino.state.BitalinoStateDisconnected;
 import workyfie.github.de.workyfie.application.bitalino.state.BitalinoStateRecording;
 import workyfie.github.de.workyfie.application.bitalino.state.IBitalinoState;
 import workyfie.github.de.workyfie.data.models.SensorData;
+import workyfie.github.de.workyfie.data.view.models.GraphDataPoint;
 
 public class SensorFragment extends android.support.v4.app.Fragment
         implements SensorView,
-        View.OnClickListener,
-        Chronometer.OnChronometerTickListener{
+        View.OnClickListener{
     public static final String TAG = SensorFragment.class.getSimpleName();
 
     private SensorPresenter presenter;
-
-    private BitalinoUpdateViewReceiver updateReceiverView;
-    private BitalinoCalcDataReciever updateReceiverCalcData;
+    private BitalinoReceiveHandler bitalinoReceiveHandler;
+    private IBitalinoReceiverStateCallback stateChangeCallback;
+    private IBitalinoReceiverDataCallback dataNewCallback;
 
     private TextView statusSensor;
     private GraphView graphView;
@@ -49,13 +51,12 @@ public class SensorFragment extends android.support.v4.app.Fragment
     private Button disconnectSensor;
     private Button startRecord;
     private Button stopRecord;
-    private Chronometer chrono;
 
     private AlertDialog alertDialog;
-    private ArrayAdapter<SensorData> adapter;
+    private ArrayAdapter<GraphDataPoint> adapter;
     private LineGraphSeries<DataPoint> series;
 
-    private List<SensorData> resultSensorData;
+    private List<GraphDataPoint> resultSensorData;
 
     private boolean tryConnecting;
 
@@ -70,22 +71,17 @@ public class SensorFragment extends android.support.v4.app.Fragment
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        bitalinoReceiveHandler = App.getComponent().getBitalinoReceiveHandler();
+
 
         presenter = new SensorPresenter(
                 App.getComponent().getThreadingModule(),
-                App.getComponent().getSensorDataRepository(),
                 App.getComponent().getBitalinoProxy(),
-                App.getComponent().getSessionRepository());
+                App.getComponent().getSessionRepository(),
+                App.getComponent().getBitalinoReceiveHandler());
 
         resultSensorData = new ArrayList<>();
         adapter = new ArrayAdapter<>(this.getContext(), android.R.layout.simple_list_item_1, android.R.id.text1, resultSensorData);
-
-        updateReceiverView = new BitalinoUpdateViewReceiver(
-                state -> presenter.handleBroadcastViewState(state),
-                frame -> presenter.handleBroadcastViewData(frame));
-
-        updateReceiverCalcData = new BitalinoCalcDataReciever(
-                frame -> presenter.handleBroadcastCalcData(frame));
     }
 
     @Nullable
@@ -99,7 +95,6 @@ public class SensorFragment extends android.support.v4.app.Fragment
         stopRecord = (Button) rootView.findViewById(R.id.stop_record);
         graphView = (GraphView) rootView.findViewById(R.id.graph);
         statusSensor = (TextView) rootView.findViewById(R.id.status_sensor);
-        chrono = (Chronometer) rootView.findViewById(R.id.chrono);
         resultSensorListView = (ListView) rootView.findViewById(R.id.result_list);
 
         resultSensorListView.setAdapter(adapter);
@@ -115,6 +110,9 @@ public class SensorFragment extends android.support.v4.app.Fragment
 
         tryConnecting = false;
 
+        stateChangeCallback = state -> presenter.handleBroadcastViewState(state);
+        dataNewCallback = data -> presenter.handleBroadcastViewData(data);
+
         return rootView;
     }
 
@@ -125,8 +123,6 @@ public class SensorFragment extends android.support.v4.app.Fragment
         presenter.attach(this);
         presenter.requestContent();
 
-        registerRecieverCalcData();
-
         Log.i(TAG, "attach");
     }
 
@@ -134,24 +130,24 @@ public class SensorFragment extends android.support.v4.app.Fragment
     public void onResume() {
         super.onResume();
 
-        registerRecieverView();
+        bitalinoReceiveHandler.subscribeState(stateChangeCallback);
+        bitalinoReceiveHandler.subscribeData(dataNewCallback);
 
         connectSenor.setOnClickListener(this);
         disconnectSensor.setOnClickListener(this);
         startRecord.setOnClickListener(this);
         stopRecord.setOnClickListener(this);
-        chrono.setOnChronometerTickListener(this);
     }
 
     @Override
     public void onPause() {
-        unregisterReceiverView();
-
         connectSenor.setOnClickListener(null);
         disconnectSensor.setOnClickListener(null);
         startRecord.setOnClickListener(null);
         stopRecord.setOnClickListener(null);
-        chrono.setOnChronometerTickListener(null);
+
+        bitalinoReceiveHandler.unsubscribeData(dataNewCallback);
+        bitalinoReceiveHandler.unsubscribeState(stateChangeCallback);
 
         super.onPause();
     }
@@ -167,8 +163,6 @@ public class SensorFragment extends android.support.v4.app.Fragment
 
     @Override
     public void onDestroy(){
-        unregisterReceiverCalcData();
-
         super.onDestroy();
     }
 
@@ -176,7 +170,7 @@ public class SensorFragment extends android.support.v4.app.Fragment
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.connect_sensor:
-                presenter.connect_sensor(getContext());
+                presenter.connect_sensor(App.getApplication());
                 break;
             case R.id.disconnect_sensor:
                 presenter.disconnect_sensor();
@@ -202,7 +196,8 @@ public class SensorFragment extends android.support.v4.app.Fragment
         }
     }
 
-    public void drawData(SensorData data) {
+    @Override
+    public void drawDataList(GraphDataPoint data) {
         resultSensorData.add(0, data);
         adapter.notifyDataSetChanged();
     }
@@ -218,29 +213,8 @@ public class SensorFragment extends android.support.v4.app.Fragment
     }
 
     @Override
-    public void onChronometerTick(Chronometer chronometer) {
-        presenter.drawGraph();
-    }
-
-    @Override
     public void addGraphData(DataPoint dataPoint) {
         series.appendData(dataPoint, true, 100);
-    }
-
-    public void registerRecieverView() {
-        getActivity().registerReceiver(updateReceiverView, updateReceiverView.getIntentFilter());
-    }
-
-    public void unregisterReceiverView() {
-        getActivity().unregisterReceiver(updateReceiverView);
-    }
-
-    public void registerRecieverCalcData() {
-        getActivity().registerReceiver(updateReceiverCalcData, updateReceiverCalcData.getIntentFilter());
-    }
-
-    public void unregisterReceiverCalcData() {
-        getActivity().unregisterReceiver(updateReceiverCalcData);
     }
 
     private void showIsConnected() {
@@ -279,9 +253,14 @@ public class SensorFragment extends android.support.v4.app.Fragment
         new android.os.Handler().postDelayed(
                 () -> {
                     if(!presenter.isSensorConnected() && tryConnecting){
-                        errMsg("Fehler beim Verbinden zum Sensor! Ist der Sensor eingeschaltet?");
-                        tryConnecting = false;
-                        showIsDisconnected();
+                        try {
+                            errMsg("Fehler beim Verbinden zum Sensor! Ist der Sensor eingeschaltet?");
+                        }catch (NullPointerException e){
+                            Log.i(TAG, e.toString());
+                        }finally {
+                            tryConnecting = false;
+                            showIsDisconnected();
+                        }
                     }
                 },
                 15000);
@@ -296,6 +275,5 @@ public class SensorFragment extends android.support.v4.app.Fragment
         statusSensor.setVisibility(View.VISIBLE);
         statusSensor.setText("RECORDING");
         resultSensorListView.setVisibility(View.VISIBLE);
-        chrono.start();
     }
 }

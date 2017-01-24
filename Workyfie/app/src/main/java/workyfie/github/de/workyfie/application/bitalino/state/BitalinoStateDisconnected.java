@@ -19,8 +19,9 @@ public class BitalinoStateDisconnected implements IBitalinoState {
     @Override
     public IBitalinoState connect(BITalinoCommunication bitalino, String macAdresse){
         try {
-            if(bitalino.connect(macAdresse))
+            if (bitalino.connect(macAdresse)) {
                 return new BitalinoStateConnected();
+            }
         } catch (BITalinoException e) {
             e.printStackTrace();
         }

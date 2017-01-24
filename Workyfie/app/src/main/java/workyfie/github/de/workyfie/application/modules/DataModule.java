@@ -3,11 +3,10 @@ package workyfie.github.de.workyfie.application.modules;
 import workyfie.github.de.workyfie.App;
 import workyfie.github.de.workyfie.application.bitalino.BitalinoProxy;
 import workyfie.github.de.workyfie.data.repos.graphdatapoint.GrapDataPointTempDataSource;
+import workyfie.github.de.workyfie.application.bitalino.reciever.BitalinoReceiveHandler;
 import workyfie.github.de.workyfie.data.repos.graphdatapoint.GraphDataPointCacheDataSource;
 import workyfie.github.de.workyfie.data.repos.graphdatapoint.GraphDataPointPersistanceDataSource;
 import workyfie.github.de.workyfie.data.repos.graphdatapoint.GraphDataPointRepository;
-import workyfie.github.de.workyfie.data.repos.sensordata.SensorDataCacheDataSource;
-import workyfie.github.de.workyfie.data.repos.sensordata.SensorDataRepository;
 import workyfie.github.de.workyfie.data.repos.session.SessionCacheDataSource;
 import workyfie.github.de.workyfie.data.repos.session.SessionPersistanceDataSource;
 import workyfie.github.de.workyfie.data.repos.session.SessionRepository;
@@ -24,14 +23,15 @@ public class DataModule {
         this.app = app;
     }
 
-    public SensorDataRepository provideSensorDataRepository() {
-        return new SensorDataRepository(
-                new SensorDataCacheDataSource()
-        );
-    }
-
     public BitalinoProxy provideBitalinoProxy() {
         return new BitalinoProxy();
+    }
+
+    public BitalinoReceiveHandler provideBitalinoReceiveDataHandler() {
+        return new BitalinoReceiveHandler(App.getComponent().getBitalinoProxy(),
+                App.getComponent().getGraphDataPointRepository(),
+                App.getComponent().getSessionRepository(),
+                App.getComponent().getThreadingModule());
     }
 
     public SessionRepository provideSessionRepository() {

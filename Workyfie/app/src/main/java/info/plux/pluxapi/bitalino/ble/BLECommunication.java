@@ -427,7 +427,7 @@ public class BLECommunication extends BITalinoCommunication {
 
                             if (bitatinoFrame.getSequence() - previousSeq != 1 && previousSeq - bitatinoFrame.getSequence() != 0 && Math.abs(previousSeq - bitatinoFrame.getSequence()) != 15) {
                                 int nSeq = bitatinoFrame.getSequence() - previousSeq;
-                                Log.e(TAG, "[" + mBluetoothDeviceAddress + "] " + "Seq: " + nSeq);
+                                //Log.e(TAG, "[" + mBluetoothDeviceAddress + "] " + "Seq: " + nSeq);
                             }
 
                             lastSampleTimeStamp = Calendar.getInstance().getTimeInMillis();
@@ -649,7 +649,7 @@ public class BLECommunication extends BITalinoCommunication {
             }
 
             BluetoothDevice devicePlux = mBluetoothAdapter.getRemoteDevice(address);
-            if (devicePlux == null) {
+            if (devicePlux.getBondState() == BluetoothDevice.BOND_NONE) {
                 Log.w(TAG, mBluetoothDeviceAddress + " - Device not found.  Unable to connect.");
                 return false;
             }

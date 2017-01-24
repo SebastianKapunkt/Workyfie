@@ -21,4 +21,7 @@ public class GraphDataPoint {
                 graphDataPoint.y
         );
     }
+    public String toString(){
+        return "x: "+ x + " y: " + y;
+    }
 }

@@ -1,8 +1,7 @@
 package workyfie.github.de.workyfie.application.bitalino.reciever;
 
-
-import info.plux.pluxapi.bitalino.BITalinoFrame;
+import workyfie.github.de.workyfie.data.view.models.GraphDataPoint;
 
 public interface IBitalinoReceiverDataCallback {
-    void callback(BITalinoFrame frame);
+    void callback(GraphDataPoint data);
 }

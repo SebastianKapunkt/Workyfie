@@ -13,7 +13,7 @@ public class GraphDataPointPersistanceViewConverter implements Converter<Persist
     @Override
     public GraphDataPoint from(PersistanceGraphDataPoint value) {
         return new GraphDataPoint(
-                String.valueOf(value.getId()),
+                value.getId(),
                 value.getSessionId(),
                 value.getX(),
                 value.getY()
@@ -23,7 +23,7 @@ public class GraphDataPointPersistanceViewConverter implements Converter<Persist
     @Override
     public PersistanceGraphDataPoint to(GraphDataPoint value) {
         return new PersistanceGraphDataPoint(
-                Integer.valueOf(value.id),
+                value.id,
                 value.sessionId,
                 value.x,
                 value.y

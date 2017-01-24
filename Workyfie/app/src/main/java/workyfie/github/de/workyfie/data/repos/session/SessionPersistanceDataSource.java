@@ -33,9 +33,14 @@ public class SessionPersistanceDataSource {
 
             Session value = Session.setId(session, getNextKey(realm));
 
-            realm.beginTransaction();
-            realm.copyToRealm(converter.to(value));
-            realm.commitTransaction();
+            try {
+                realm.beginTransaction();
+                realm.copyToRealm(converter.to(value));
+                realm.commitTransaction();
+            } catch (Exception e) {
+                e.printStackTrace();
+                realm.cancelTransaction();
+            }
 
             subscriber.onNext(value);
             subscriber.onCompleted();
