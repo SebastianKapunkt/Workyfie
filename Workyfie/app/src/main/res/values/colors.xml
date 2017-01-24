@@ -6,4 +6,8 @@
     <color name="white">#fff</color>
     <color name="green">#63d13e</color>
     <color name="warning">#FFC107</color>
+    <color name="divider">#B6B6B6</color>
+    <color name="black">#000</color>
+    <color name="gray">#333</color>
+    <color name="light_gray">#ccc</color>
 </resources>

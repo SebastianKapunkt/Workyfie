@@ -27,4 +27,10 @@
         <item name="android:textSize">20dp</item>
     </style>
 
+    <style name="AppTheme.Toolbar" parent="TextAppearance.Widget.AppCompat.Toolbar.Title">
+        <item name="colorControlNormal">@color/colorPrimaryDark</item>
+        <item name="android:textSize">20sp</item>
+        <item name="android:textColor">@color/colorPrimaryDark</item>
+    </style>
+
 </resources>
