@@ -129,9 +129,6 @@ public class BLECommunication extends BITalinoCommunication {
                 if(disconnectFired){
                     close();
                 }
-                else{
-                    reconnect();
-                }
 
                 isConnected = false;
                 isReady = false;
