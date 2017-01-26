@@ -3,58 +3,59 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:gravity="center_vertical">
+    android:gravity="center_vertical"
+    android:orientation="vertical">
 
     <RelativeLayout
         android:id="@+id/status_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
         android:layout_marginBottom="20dp"
         android:layout_marginLeft="8dp"
         android:layout_marginRight="8dp"
-        android:layout_marginTop="20dp"
-        android:layout_alignParentEnd="true">
+        android:layout_marginTop="20dp">
 
         <TextView
-            android:text="TextView"
+            android:id="@+id/textConnected"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/textConnected"
             android:layout_below="@+id/imageConnectStatus"
             android:layout_centerHorizontal="true"
             android:paddingTop="5dp"
-            android:textSize="24sp"
-            android:textColor="@color/colorAccent"/>
+            android:text="TextView"
+            android:textColor="@color/colorAccent"
+            android:textSize="24sp" />
 
         <ImageView
-            app:srcCompat="@mipmap/connected_chains"
             android:id="@+id/imageConnectStatus"
+            android:layout_width="128dp"
+            android:layout_height="128dp"
             android:layout_alignParentTop="true"
             android:layout_centerHorizontal="true"
-            android:layout_height="128dp"
-            android:layout_width="128dp"/>
+            app:srcCompat="@drawable/bluetooth_off" />
     </RelativeLayout>
 
     <RelativeLayout
         android:id="@+id/information_table"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_below="@+id/status_container"
         android:layout_marginBottom="4dp"
         android:layout_marginLeft="8dp"
         android:layout_marginRight="8dp"
         android:layout_marginTop="4dp"
-        android:layout_below="@+id/status_container"
         android:background="@drawable/rectangle"
         android:elevation="4dp"
         android:orientation="vertical">
+
         <TableLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="8dp"
-            android:stretchColumns="1,1"
+            android:layout_alignParentStart="true"
             android:layout_alignParentTop="true"
-            android:layout_alignParentStart="true">
+            android:padding="8dp"
+            android:stretchColumns="1,1">
 
             <TableRow
                 android:layout_width="match_parent"
@@ -152,12 +153,12 @@
         android:id="@+id/button_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_below="@+id/information_table"
         android:layout_marginBottom="5dp"
         android:layout_marginLeft="8dp"
         android:layout_marginRight="8dp"
-        android:layout_marginTop="5dp"
-        android:layout_below="@+id/information_table"
-        android:layout_alignParentEnd="true">
+        android:layout_marginTop="5dp">
 
         <Button
             android:id="@+id/scan_sensor"
@@ -167,7 +168,7 @@
             android:layout_centerHorizontal="true"
             android:layout_centerVertical="true"
             android:layout_gravity="center"
-            android:text="@string/scan_sensor"/>
+            android:text="@string/scan_sensor" />
 
         <Button
             android:id="@+id/disconnect_sensor"
@@ -184,8 +185,8 @@
             style="?android:attr/progressBarStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
             android:layout_alignParentEnd="true"
+            android:layout_alignParentTop="true"
             android:layout_marginEnd="10dp" />
     </RelativeLayout>
 
@@ -193,39 +194,39 @@
         android:id="@+id/device_list_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_below="@+id/button_container"
         android:layout_marginBottom="10dp"
         android:layout_marginLeft="8dp"
         android:layout_marginRight="8dp"
         android:layout_marginTop="5dp"
-        android:layout_below="@+id/button_container"
         android:background="@drawable/rectangle"
-        android:elevation="4dp"
-        android:layout_alignParentEnd="true">
+        android:elevation="4dp">
 
         <TextView
             android:id="@+id/textView5"
             style="@style/session_table_key"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/available_device"
-            android:background="@drawable/border_bottom"/>
+            android:background="@drawable/border_bottom"
+            android:text="@string/available_device" />
 
         <TextView
-            android:text="@string/no_devices"
+            android:id="@+id/empty_device_list"
             style="@style/session_table_value"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
             android:layout_below="@+id/textView5"
-            android:layout_marginTop="10dp"
+            android:layout_centerHorizontal="true"
             android:layout_marginBottom="10dp"
-            android:id="@+id/empty_device_list" />
+            android:layout_marginTop="10dp"
+            android:text="@string/no_devices" />
 
         <ListView
             android:id="@+id/device_list"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/textView5"/>
+            android:layout_below="@+id/textView5" />
 
     </RelativeLayout>
 

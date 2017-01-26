@@ -128,11 +128,11 @@ public class MainActivity extends AppCompatActivity implements SidebarFragment.C
         Toolbar toolbar = (Toolbar)findViewById(R.id.toolbar);
         ImageView image = (ImageView) toolbar.findViewById(R.id.toolbar_image);
         if (state instanceof BitalinoStateConnected) {
-            image.setImageResource(R.mipmap.connected_chains);
+            image.setImageDrawable(getDrawable(R.drawable.bluetooth_transfer));
         } else if (state instanceof BitalinoStateDisconnected) {
-            image.setImageResource(R.mipmap.disconnected_chains);
+            image.setImageDrawable(getDrawable(R.drawable.bluetooth_off));
         } else if (state instanceof BitalinoStateConnecting){
-            image.setImageResource(R.mipmap.connecting_dots);
+            image.setImageDrawable(getDrawable(R.drawable.bluetooth_connect));
         }
     }
 }

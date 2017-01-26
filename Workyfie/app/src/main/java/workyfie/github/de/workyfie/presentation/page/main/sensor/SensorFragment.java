@@ -244,7 +244,8 @@ public class SensorFragment extends android.support.v4.app.Fragment
 
         statusSensor.setText("Verbunden");
         connectedStatus.setText("VERBUNDEN");
-        connectedImage.setImageResource(R.mipmap.connected_chains);
+        connectedStatus.setTextColor(getActivity().getResources().getColor(R.color.green));
+        connectedImage.setImageDrawable(getActivity().getDrawable(R.drawable.bluetooth_transfer));
 
         tryConnecting = false;
     }
@@ -261,7 +262,8 @@ public class SensorFragment extends android.support.v4.app.Fragment
 
         statusSensor.setText("nicht Verbunden");
         connectedStatus.setText("NICHT VERBUNDEN");
-        connectedImage.setImageResource(R.mipmap.disconnected_chains);
+        connectedStatus.setTextColor(getActivity().getResources().getColor(R.color.gray));
+        connectedImage.setImageDrawable(getActivity().getDrawable(R.drawable.bluetooth_off));
     }
 
     private void showIsConnecting(){
@@ -273,7 +275,8 @@ public class SensorFragment extends android.support.v4.app.Fragment
 
         statusSensor.setText("Verbinde Sensor...");
         connectedStatus.setText("Verbinde...");
-        connectedImage.setImageResource(R.mipmap.connecting_dots);
+        connectedStatus.setTextColor(getActivity().getResources().getColor(R.color.colorAccent));
+        connectedImage.setImageDrawable(getActivity().getDrawable(R.drawable.bluetooth_connect));
 
         //handle Timout connecting
         tryConnecting = true;
