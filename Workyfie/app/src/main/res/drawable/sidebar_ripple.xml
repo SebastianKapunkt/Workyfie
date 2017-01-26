@@ -4,7 +4,7 @@
     <item>
         <selector>
             <item android:state_selected="true">
-                <color android:color="@color/light_gray" />
+                <color android:color="@color/colorPrimaryLight" />
             </item>
             <item>
                 <color android:color="@color/white" />

@@ -1,6 +1,7 @@
 package workyfie.github.de.workyfie.application.bitalino.state;
 
 import info.plux.pluxapi.bitalino.BITalinoCommunication;
+import info.plux.pluxapi.bitalino.BITalinoErrorTypes;
 import info.plux.pluxapi.bitalino.BITalinoException;
 
 public class BitalinoStateDisconnected implements IBitalinoState {
@@ -17,15 +18,12 @@ public class BitalinoStateDisconnected implements IBitalinoState {
     }
 
     @Override
-    public IBitalinoState connect(BITalinoCommunication bitalino, String macAdresse){
-        try {
+    public IBitalinoState connect(BITalinoCommunication bitalino, String macAdresse) throws BITalinoException {
             if (bitalino.connect(macAdresse)) {
                 return new BitalinoStateConnected();
+            }else{
+                throw new BITalinoException(BITalinoErrorTypes.BT_DEVICE_NOT_CONNECTED);
             }
-        } catch (BITalinoException e) {
-            e.printStackTrace();
-        }
-        return this;
     }
 
     @Override

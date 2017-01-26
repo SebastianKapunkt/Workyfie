@@ -1,45 +1,43 @@
 package workyfie.github.de.workyfie.presentation.page.main.sensor;
 
+import android.app.Activity;
+import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
-import android.util.Log;
+import android.content.Intent;
+import android.os.Handler;
+import android.support.v4.app.FragmentActivity;
 
-import com.jjoe64.graphview.series.DataPoint;
+import java.util.ArrayList;
 
-import org.threeten.bp.Instant;
-
-import rx.Observer;
-import rx.subscriptions.CompositeSubscription;
 import workyfie.github.de.workyfie.application.bitalino.BitalinoProxy;
-import workyfie.github.de.workyfie.application.bitalino.reciever.BitalinoReceiveHandler;
 import workyfie.github.de.workyfie.application.bitalino.state.BitalinoStateConnected;
 import workyfie.github.de.workyfie.application.bitalino.state.BitalinoStateRecording;
 import workyfie.github.de.workyfie.application.bitalino.state.IBitalinoState;
-import workyfie.github.de.workyfie.application.modules.ThreadingModule;
-import workyfie.github.de.workyfie.data.repos.session.SessionRepository;
-import workyfie.github.de.workyfie.data.view.models.GraphDataPoint;
-import workyfie.github.de.workyfie.data.view.models.Session;
+import workyfie.github.de.workyfie.application.bth.BTESerachCallback;
+import workyfie.github.de.workyfie.application.bth.BthDevice;
 import workyfie.github.de.workyfie.presentation.mvp.Presenter;
 
 public class SensorPresenter implements Presenter<SensorView> {
     public static final String TAG = SensorPresenter.class.getSimpleName();
 
-    private final String MAC_ADRESS = "B0:B4:48:F0:CE:CA";
-    private final int CHANNEL = 0; //A1 --> 0 A2 --> 1 "B0:B4:48:F0:C6:8A"
-    private final int SAMPLE_RATE = 1000;
+    private final int REQUEST_ENABLE_BT = 1;
+    private final long SCAN_PERIOD = 6000;
 
     private SensorView view;
+
     private BitalinoProxy bitalino;
-    private BitalinoReceiveHandler bitalinoReceiveHandler;
+    private BluetoothAdapter bluetoothAdapter;
+    private ArrayList<BthDevice> deviceList;
 
-    private CompositeSubscription subscription;
-    private final ThreadingModule threadingModule;
-    private SessionRepository sessionRepository;
+    private boolean mScanning;
+    private Handler mHandler;
 
-    public SensorPresenter(ThreadingModule threadingModule, BitalinoProxy bitalino, SessionRepository sessionRepository, BitalinoReceiveHandler bitalinoReceiveHandler) {
-        this.threadingModule = threadingModule;
+    public SensorPresenter(BitalinoProxy bitalino, BluetoothAdapter bluetoothAdapter,ArrayList<BthDevice> deviceList) {
         this.bitalino = bitalino;
-        this.sessionRepository = sessionRepository;
-        this.bitalinoReceiveHandler = bitalinoReceiveHandler;
+        this.bluetoothAdapter = bluetoothAdapter;
+        this.deviceList = deviceList;
+
+        mHandler = new Handler();
     }
 
     @Override
@@ -50,72 +48,63 @@ public class SensorPresenter implements Presenter<SensorView> {
     @Override
     public void detach() {
         this.view = null;
-        if (subscription != null) {
-            subscription.unsubscribe();
-            subscription = null;
-        }
     }
 
-    private CompositeSubscription subscription() {
-        if (subscription == null) {
-            subscription = new CompositeSubscription();
-        }
-        return subscription;
+    public void requestContent() {
+        drawView(bitalino.getBitalinoState());
+
     }
 
     public boolean isSensorConnected() {
         return (bitalino.getBitalinoState() instanceof BitalinoStateConnected || bitalino.getBitalinoState() instanceof BitalinoStateRecording);
     }
 
-    public void requestContent() {
-        drawView(bitalino.getBitalinoState());
-        //TODO check session noch aktiv wenn ja dann weiter zeichnen und aktuelle Session aus DB holen
+    public void scan_start(Activity activity,BTESerachCallback serachCallback){
+
+        // Ensures Bluetooth is available on the device and it is enabled. If not,
+        // displays a dialog requesting user permission to enable Bluetooth.
+        if (bluetoothAdapter == null || !bluetoothAdapter.isEnabled()) {
+            Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+            activity.startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
+            return;
+        }
+
+        deviceList.clear();
+        view.notifyDeviceDataChange();
+        scanDevice(true, serachCallback);
+
+    }
+    public void scan_stop(BTESerachCallback serachCallback){
+        scanDevice(false, serachCallback);
     }
 
-    public void connect_sensor(Context context) {
-        bitalino.initBitalinoCommunicationBLE(context);
-        if (!bitalino.connect_sensor(MAC_ADRESS)) {
-            view.errMsg("Fehler beim Verbinden mit dem Sensor. Ist BT eingeschaltet?");
+    private void scanDevice(final boolean enable, BTESerachCallback serachCallback){
+        if(enable){
+            // Stops scanning after a pre-defined scan period.
+            mHandler.postDelayed(() -> {
+                bluetoothAdapter.cancelDiscovery();
+                bluetoothAdapter.startLeScan(serachCallback);
+                mHandler.postDelayed(() -> {
+                    bluetoothAdapter.stopLeScan(serachCallback);
+                    drawViewScanning(false);
+                }, SCAN_PERIOD);
+            }, SCAN_PERIOD);
+            drawViewScanning(true);
+            bluetoothAdapter.startDiscovery();
+        }else{
+            bluetoothAdapter.cancelDiscovery();
+            bluetoothAdapter.stopLeScan(serachCallback);
+            drawViewScanning(false);
         }
     }
 
-    public void start_recording() {
-        subscription().add(
-                sessionRepository.save(new Session("", "new_session", Instant.now(), null))
-                        .subscribeOn(threadingModule.getIOScheduler())
-                        .observeOn(threadingModule.getMainScheduler())
-                        .subscribe(new Observer<Session>() {
-                                       @Override
-                                       public void onCompleted() {
-                                           Log.i(TAG, "requestContent onCompleted");
-                                       }
+    public void connect_sensor(Context context, String adresse, BTESerachCallback serachCallback) {
+        scanDevice(false, serachCallback);
 
-                                       @Override
-                                       public void onError(Throwable e) {
-                                           e.printStackTrace();
-                                       }
-
-                                       @Override
-                                       public void onNext(Session session) {
-                                           Log.i(TAG, "id " + session.id);
-
-                                           bitalinoReceiveHandler.setNewSession(session.id);
-
-                                           if (!bitalino.start_recording(new int[]{CHANNEL}, SAMPLE_RATE)) {
-                                               view.errMsg("Fehler beim Starten der Aufnahme!");
-                                           }
-                                       }
-                                   }
-                        ));
-
-    }
-
-    public void stop_reording(Context context) {
-        //BUG SENSOR beim Recording nicht gestoppt werden, daher erst disconnecten und dann wieder connecten.
-        bitalino.disconnect_sensor();
-        new android.os.Handler().postDelayed(
-                () -> connect_sensor(context),
-                300);
+        bitalino.initBitalinoCommunicationBLE(context);
+        if (!bitalino.connect_sensor(adresse)) {
+            view.errMsg("Fehler beim Verbinden mit dem Sensor. Ist BT eingeschaltet?");
+        }
     }
 
     public void disconnect_sensor() {
@@ -126,17 +115,18 @@ public class SensorPresenter implements Presenter<SensorView> {
         view.drawState(state);
     }
 
-    private void drawView(GraphDataPoint data) {
-        //view.drawDataList(data);
-        view.addGraphData(new DataPoint(data.x, data.y));
-    }
-
+    private void drawViewScanning(boolean isScanning){view.drawIsScanning(isScanning);}
 
     public void handleBroadcastViewState(IBitalinoState state) {
         drawView(state);
     }
 
-    public void handleBroadcastViewData(GraphDataPoint data) {
-        drawView(data);
+    public void handleFoundNewBthDevice(BthDevice device){
+        for (BthDevice otherDevice: deviceList) {
+            if(otherDevice.adresse.equals(device.adresse))
+                return;
+        }
+        deviceList.add(device);
+        view.notifyDeviceDataChange();
     }
 }

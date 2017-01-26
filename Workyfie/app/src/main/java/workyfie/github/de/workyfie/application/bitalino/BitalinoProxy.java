@@ -5,6 +5,7 @@ import android.content.Context;
 import info.plux.pluxapi.Communication;
 import info.plux.pluxapi.bitalino.BITalinoCommunication;
 import info.plux.pluxapi.bitalino.BITalinoCommunicationFactory;
+import info.plux.pluxapi.bitalino.BITalinoException;
 import workyfie.github.de.workyfie.App;
 import workyfie.github.de.workyfie.application.bitalino.state.BitalinoStateDisconnected;
 import workyfie.github.de.workyfie.application.bitalino.state.EBitalinoStateException;
@@ -15,6 +16,8 @@ public class BitalinoProxy {
 
     private IBitalinoState bitalinoState;
     private BITalinoCommunication biTalinoCommunication;
+
+    private String lastMacAdresse;
 
     public BitalinoProxy() {
         this.biTalinoCommunication = null;
@@ -37,11 +40,17 @@ public class BitalinoProxy {
         return this.bitalinoState;
     }
 
+    public boolean connect_sensor(){
+        return connect_sensor(lastMacAdresse);
+    }
     public boolean connect_sensor(String macAdresse) {
         try {
             bitalinoState.connect(biTalinoCommunication, macAdresse);
+            lastMacAdresse = macAdresse;
             return true;
         } catch (EBitalinoStateException e) {
+            e.printStackTrace();
+        } catch (BITalinoException e) {
             e.printStackTrace();
         }
         return false;

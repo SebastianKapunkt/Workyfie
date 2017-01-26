@@ -13,9 +13,9 @@ import workyfie.github.de.workyfie.presentation.mvp.PresenterView;
 public interface SensorView extends PresenterView {
     void drawState(IBitalinoState state);
 
+    void drawIsScanning(boolean isScanning);
+
+    void notifyDeviceDataChange();
+
     void errMsg(String msg);
-
-    void addGraphData(DataPoint dataPoint);
-
-    void drawDataList(GraphDataPoint data);
 }

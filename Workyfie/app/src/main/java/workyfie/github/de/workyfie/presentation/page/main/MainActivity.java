@@ -8,17 +8,22 @@ import android.support.v7.widget.Toolbar;
 
 import android.os.Bundle;
 import android.view.Gravity;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
 
+import workyfie.github.de.workyfie.App;
 import workyfie.github.de.workyfie.R;
+import workyfie.github.de.workyfie.application.bitalino.reciever.BitalinoReceiveHandler;
+import workyfie.github.de.workyfie.application.bitalino.reciever.IBitalinoReceiverStateCallback;
+import workyfie.github.de.workyfie.application.bitalino.state.BitalinoStateConnected;
+import workyfie.github.de.workyfie.application.bitalino.state.BitalinoStateConnecting;
+import workyfie.github.de.workyfie.application.bitalino.state.BitalinoStateDisconnected;
+import workyfie.github.de.workyfie.application.bitalino.state.IBitalinoState;
+import workyfie.github.de.workyfie.presentation.page.main.information.InformationFragment;
+import workyfie.github.de.workyfie.presentation.page.main.measure.MeasureFragment;
 import workyfie.github.de.workyfie.presentation.page.main.sensor.SensorFragment;
 import workyfie.github.de.workyfie.presentation.page.main.sidebar.SidebarFragment;
 import workyfie.github.de.workyfie.presentation.page.main.sidebar.SidebarItem;
-
-import static workyfie.github.de.workyfie.presentation.page.main.sidebar.SidebarItem.*;
-import static workyfie.github.de.workyfie.presentation.page.main.sidebar.SidebarItem.HISTORY;
 
 public class MainActivity extends AppCompatActivity implements SidebarFragment.Container {
     public static final String TAG = MainActivity.class.getSimpleName();
@@ -26,20 +31,40 @@ public class MainActivity extends AppCompatActivity implements SidebarFragment.C
     private DrawerLayout drawerLayout;
     private ActionBarDrawerToggle drawerToggle;
 
+    private BitalinoReceiveHandler bitalinoReceiveHandler;
+    private IBitalinoReceiverStateCallback stateChangeCallback;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 
+        bitalinoReceiveHandler = App.getComponent().getBitalinoReceiveHandler();
+        stateChangeCallback = state -> onSensorStateChange(state);
+
+        onSensorStateChange(App.getComponent().getBitalinoProxy().getBitalinoState());
         setUpToolbar();
 
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.container_sidebar, SidebarFragment.newInstance(), SidebarFragment.TAG)
-                    .add(R.id.container_main, SensorFragment.newInstance(), SensorFragment.TAG)
+                    .add(R.id.container_main, MeasureFragment.newInstance(), MeasureFragment.TAG)
                     .commit();
         }
+    }
+
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        bitalinoReceiveHandler.subscribeState(stateChangeCallback);
+    }
+
+    @Override
+    protected void onPause() {
+        bitalinoReceiveHandler.unsubscribeState(stateChangeCallback);
+        super.onPause();
     }
 
     @Override
@@ -74,24 +99,40 @@ public class MainActivity extends AppCompatActivity implements SidebarFragment.C
 
     @Override
     public void onSidebarItemClicked(SidebarItem sidebarItem) {
-        drawerLayout.closeDrawer(Gravity.LEFT);
         switch (sidebarItem) {
             case HISTORY:
 
                 break;
             case INFORMATION:
-
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.container_main, InformationFragment.newInstance(), InformationFragment.TAG)
+                        .commit();
                 break;
             case SENSOR:
                 getSupportFragmentManager().beginTransaction()
-                        .add(R.id.container_sidebar, SidebarFragment.newInstance(), SidebarFragment.TAG)
-                        .add(R.id.container_main, SensorFragment.newInstance(), SensorFragment.TAG)
+                        .replace(R.id.container_main, SensorFragment.newInstance(), SensorFragment.TAG)
                         .commit();
                 break;
             case MEASURE:
-
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.container_main, MeasureFragment.newInstance(), MeasureFragment.TAG)
+                        .commit();
                 break;
 
+        }
+        setTitle(getResources().getString(sidebarItem.resTitle));
+        drawerLayout.closeDrawer(Gravity.LEFT);
+    }
+
+    public void onSensorStateChange(IBitalinoState state){
+        Toolbar toolbar = (Toolbar)findViewById(R.id.toolbar);
+        ImageView image = (ImageView) toolbar.findViewById(R.id.toolbar_image);
+        if (state instanceof BitalinoStateConnected) {
+            image.setImageResource(R.mipmap.connected_chains);
+        } else if (state instanceof BitalinoStateDisconnected) {
+            image.setImageResource(R.mipmap.disconnected_chains);
+        } else if (state instanceof BitalinoStateConnecting){
+            image.setImageResource(R.mipmap.connecting_dots);
         }
     }
 }

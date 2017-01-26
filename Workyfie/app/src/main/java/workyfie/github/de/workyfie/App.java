@@ -30,7 +30,7 @@ public class App extends Application {
         Realm.init(this);
 
         bitalinoReceiver = new BitalinoBroadcastReceiver(App.getComponent().getBitalinoReceiveHandler(),
-                new BitalinoConfig(0, "B0:B4:48:F0:C6:8A", 1000));
+                BitalinoConfig.BITALINO_CONFIG_EEG);
 
         this.registerReceiver(bitalinoReceiver, bitalinoReceiver.getIntentFilter());
     }
