@@ -646,7 +646,7 @@ public class BLECommunication extends BITalinoCommunication {
             }
 
             BluetoothDevice devicePlux = mBluetoothAdapter.getRemoteDevice(address);
-            if (devicePlux.getBondState() == BluetoothDevice.BOND_NONE) {
+            if (devicePlux == null) {
                 Log.w(TAG, mBluetoothDeviceAddress + " - Device not found.  Unable to connect.");
                 return false;
             }
