@@ -1,6 +1,8 @@
 package workyfie.github.de.workyfie.data.view.models;
 
-public class GraphDataPoint {
+import com.jjoe64.graphview.series.DataPointInterface;
+
+public class GraphDataPoint implements DataPointInterface{
     public final String id;
     public final String sessionId;
     public final Double x;
@@ -23,5 +25,15 @@ public class GraphDataPoint {
     }
     public String toString(){
         return "x: "+ x + " y: " + y;
+    }
+
+    @Override
+    public double getX() {
+        return x;
+    }
+
+    @Override
+    public double getY() {
+        return y;
     }
 }

@@ -19,6 +19,7 @@ import workyfie.github.de.workyfie.application.bitalino.state.BitalinoStateConne
 import workyfie.github.de.workyfie.application.bitalino.state.BitalinoStateConnecting;
 import workyfie.github.de.workyfie.application.bitalino.state.BitalinoStateDisconnected;
 import workyfie.github.de.workyfie.application.bitalino.state.IBitalinoState;
+import workyfie.github.de.workyfie.presentation.page.main.historie.HistoryFragment;
 import workyfie.github.de.workyfie.presentation.page.main.information.InformationFragment;
 import workyfie.github.de.workyfie.presentation.page.main.measure.MeasureFragment;
 import workyfie.github.de.workyfie.presentation.page.main.sensor.SensorFragment;
@@ -101,21 +102,27 @@ public class MainActivity extends AppCompatActivity implements SidebarFragment.C
     public void onSidebarItemClicked(SidebarItem sidebarItem) {
         switch (sidebarItem) {
             case HISTORY:
-
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.container_main, HistoryFragment.newInstance(), HistoryFragment.TAG)
+                        .addToBackStack(TAG)
+                        .commit();
                 break;
             case INFORMATION:
                 getSupportFragmentManager().beginTransaction()
                         .replace(R.id.container_main, InformationFragment.newInstance(), InformationFragment.TAG)
+                        .addToBackStack(TAG)
                         .commit();
                 break;
             case SENSOR:
                 getSupportFragmentManager().beginTransaction()
                         .replace(R.id.container_main, SensorFragment.newInstance(), SensorFragment.TAG)
+                        .addToBackStack(TAG)
                         .commit();
                 break;
             case MEASURE:
                 getSupportFragmentManager().beginTransaction()
                         .replace(R.id.container_main, MeasureFragment.newInstance(), MeasureFragment.TAG)
+                        .addToBackStack(TAG)
                         .commit();
                 break;
 
@@ -124,8 +131,8 @@ public class MainActivity extends AppCompatActivity implements SidebarFragment.C
         drawerLayout.closeDrawer(Gravity.LEFT);
     }
 
-    public void onSensorStateChange(IBitalinoState state){
-        Toolbar toolbar = (Toolbar)findViewById(R.id.toolbar);
+    public void onSensorStateChange(IBitalinoState state) {
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         ImageView image = (ImageView) toolbar.findViewById(R.id.toolbar_image);
         if (state instanceof BitalinoStateConnected) {
             image.setImageDrawable(getDrawable(R.drawable.bluetooth_transfer));

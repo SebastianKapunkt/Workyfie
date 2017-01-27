@@ -1,14 +1,13 @@
 package workyfie.github.de.workyfie.data.repos.graphdatapoint;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import io.realm.Realm;
 import rx.Observable;
 import workyfie.github.de.workyfie.data.persistance.models.PersistanceGraphDataPoint;
-import workyfie.github.de.workyfie.data.persistance.models.PersistanceSession;
 import workyfie.github.de.workyfie.data.persistance.models.converter.GraphDataPointPersistanceViewConverter;
 import workyfie.github.de.workyfie.data.view.models.GraphDataPoint;
-import workyfie.github.de.workyfie.data.view.models.Session;
 
 public class GraphDataPointPersistanceDataSource {
 
@@ -19,12 +18,24 @@ public class GraphDataPointPersistanceDataSource {
     }
 
     public Observable<List<GraphDataPoint>> getBySessionId(String sessionId) {
-        Realm realm = Realm.getDefaultInstance();
-        return realm.where(PersistanceGraphDataPoint.class)
-                .equalTo("sessionId", sessionId)
-                .findAll()
-                .asObservable()
-                .map(persistance -> converter.from(realm.copyFromRealm(persistance)));
+        return Observable.create(subscriber -> {
+            List<GraphDataPoint> points = new ArrayList<>();
+
+            Realm realm = Realm.getDefaultInstance();
+
+            points = converter.from(
+                    realm.copyFromRealm(
+                            realm.where(PersistanceGraphDataPoint.class)
+                                    .equalTo("sessionId", sessionId)
+                                    .findAll()
+                    )
+            );
+
+            if (points.size() > 0) {
+                subscriber.onNext(points);
+            }
+            subscriber.onCompleted();
+        });
     }
 
     public Observable<GraphDataPoint> save(final GraphDataPoint graphDataPoint) {

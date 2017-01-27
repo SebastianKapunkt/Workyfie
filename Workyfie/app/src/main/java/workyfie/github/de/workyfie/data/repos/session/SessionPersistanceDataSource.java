@@ -1,5 +1,7 @@
 package workyfie.github.de.workyfie.data.repos.session;
 
+import java.util.List;
+
 import io.realm.Realm;
 import rx.Observable;
 import workyfie.github.de.workyfie.data.persistance.models.PersistanceSession;
@@ -52,5 +54,22 @@ public class SessionPersistanceDataSource {
             return "0";
         }
         return String.valueOf(realm.where(PersistanceSession.class).max("id").intValue() + 1);
+    }
+
+    public Observable<List<Session>> list() {
+        return Observable.create(subscriber -> {
+            Realm realm = Realm.getDefaultInstance();
+            List<Session> sessionList = converter.from(
+                    realm.copyFromRealm(
+                            realm.where(PersistanceSession.class)
+                                    .findAll()
+                    )
+            );
+
+            if (sessionList.size() > 0) {
+                subscriber.onNext(sessionList);
+            }
+            subscriber.onCompleted();
+        });
     }
 }

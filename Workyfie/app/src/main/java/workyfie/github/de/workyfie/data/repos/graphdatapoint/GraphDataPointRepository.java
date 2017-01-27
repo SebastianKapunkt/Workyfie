@@ -4,7 +4,6 @@ import java.util.List;
 
 import rx.Observable;
 import workyfie.github.de.workyfie.data.view.models.GraphDataPoint;
-import workyfie.github.de.workyfie.data.view.models.Session;
 
 public class GraphDataPointRepository {
 
@@ -37,7 +36,7 @@ public class GraphDataPointRepository {
     }
 
     public Observable<GraphDataPoint> save(GraphDataPoint graphDataPoint) {
-        return persistance.save(graphDataPoint);
-//                .flatMap(cache::save);
+        return persistance.save(graphDataPoint)
+                .flatMap(cache::save);
     }
 }

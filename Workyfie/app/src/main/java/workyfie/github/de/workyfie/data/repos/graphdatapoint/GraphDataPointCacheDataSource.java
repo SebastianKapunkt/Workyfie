@@ -23,8 +23,9 @@ public class GraphDataPointCacheDataSource extends SimpleCacheDataSource<GraphDa
                     withSessionId.add(graphDataPoint);
                 }
             }
-
-            subscriber.onNext(withSessionId);
+            if (withSessionId.size() > 0) {
+                subscriber.onNext(withSessionId);
+            }
             subscriber.onCompleted();
         });
     }
