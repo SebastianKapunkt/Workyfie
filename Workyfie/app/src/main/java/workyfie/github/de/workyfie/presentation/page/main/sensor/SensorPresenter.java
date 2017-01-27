@@ -121,6 +121,8 @@ public class SensorPresenter implements Presenter<SensorView> {
 
     public void disconnect_sensor() {
         bitalino.disconnect_sensor();
+        deviceList.clear();
+        view.notifyDeviceDataChange();
     }
 
     private void drawView(IBitalinoState state) {
