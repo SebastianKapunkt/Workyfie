@@ -7,6 +7,8 @@
     <color name="colorAccent">#FFAB40</color>
     <color name="colorAccentDark">#FF9100</color>
     <color name="colorAccentLight">#FFD180</color>
+    <color name="primaryTextDark">#808080</color>
+    <color name="primaryTextLight">#FFFFFF</color>
     <color name="white">#fff</color>
     <color name="green">#63d13e</color>
     <color name="warning">#FFC107</color>
