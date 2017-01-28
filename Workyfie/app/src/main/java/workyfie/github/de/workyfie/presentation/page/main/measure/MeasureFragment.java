@@ -1,6 +1,8 @@
 package workyfie.github.de.workyfie.presentation.page.main.measure;
 
 import android.app.AlertDialog;
+import android.graphics.Color;
+import android.graphics.Paint;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -36,6 +38,8 @@ public class MeasureFragment extends Fragment implements MeasureView, View.OnCli
 
     public static final String TAG = MeasureFragment.class.getSimpleName();
 
+
+
     private MeasurePresenter presenter;
     private BitalinoReceiveHandler bitalinoReceiveHandler;
     private IBitalinoReceiverStateCallback stateChangeCallback;
@@ -52,6 +56,7 @@ public class MeasureFragment extends Fragment implements MeasureView, View.OnCli
     private AlertDialog alertDialog;
 
     private LineGraphSeries<DataPoint> series;
+    private final int MAX_X = 40;
 
 
     public static MeasureFragment newInstance() {
@@ -88,13 +93,20 @@ public class MeasureFragment extends Fragment implements MeasureView, View.OnCli
         infoNoConnect = (TextView) rootView.findViewById(R.id.textNoConnected);
 
         series = new LineGraphSeries<>();
+        series.setColor(getResources().getColor(R.color.colorAccentDark));
+        series.setAnimated(true);
+        series.setThickness(10);
 
         graphView.addSeries(series);
         graphView.setTitle("EEG Daten");
-        graphView.setTitleColor(R.color.colorPrimary);
+        graphView.setTitleColor(getResources().getColor(R.color.primaryTextDark));
+        graphView.getViewport().setScalable(true);
         graphView.getViewport().setXAxisBoundsManual(true);
-        graphView.getViewport().setMinX(0);
-        graphView.getViewport().setMaxX(40);
+        graphView.getViewport().setMaxX(0);
+        graphView.getViewport().setMaxX(MAX_X);
+        graphView.getViewport().setYAxisBoundsManual(true);
+        graphView.getViewport().setMinY(0);
+        graphView.getViewport().setMaxY(1000);
 
         String textNoConnect = getString(R.string.text_no_connect);
         infoNoConnect.setText(Html.fromHtml(textNoConnect));
@@ -177,7 +189,12 @@ public class MeasureFragment extends Fragment implements MeasureView, View.OnCli
     }
     @Override
     public void addGraphData(DataPoint dataPoint) {
-        series.appendData(dataPoint, true, 100);
+        if(dataPoint.getX() <= MAX_X){
+            series.appendData(dataPoint, false, 100);
+        }else{
+            series.appendData(dataPoint, true, 100);
+        }
+
     }
 
     @Override
