@@ -84,15 +84,22 @@ public class SensorPresenter implements Presenter<SensorView> {
             // Stops scanning after a pre-defined scan period.
             mHandler.postDelayed(() -> {
                 bluetoothAdapter.cancelDiscovery();
-                bluetoothAdapter.startLeScan(serachCallback);
-                mHandler.postDelayed(() -> {
-                    bluetoothAdapter.stopLeScan(serachCallback);
-                    drawViewScanning(false);
-                }, SCAN_PERIOD);
+                if(mScanning){
+                    bluetoothAdapter.startLeScan(serachCallback);
+                    mHandler.postDelayed(() -> {
+                        bluetoothAdapter.stopLeScan(serachCallback);
+                        if(mScanning){
+                            mScanning = false;
+                            drawViewScanning(false);
+                        }
+                    }, SCAN_PERIOD);
+                }
             }, SCAN_PERIOD);
+            mScanning = true;
             drawViewScanning(true);
             bluetoothAdapter.startDiscovery();
         }else{
+            mScanning = false;
             bluetoothAdapter.cancelDiscovery();
             bluetoothAdapter.stopLeScan(serachCallback);
             drawViewScanning(false);
