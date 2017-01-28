@@ -128,7 +128,10 @@ public class SensorFragment extends android.support.v4.app.Fragment
         deviceListView.setAdapter(adapter);
 
         deviceListView.setOnItemClickListener((adapterView, view, i, l) -> {
-            presenter.connect_sensor(getContext(),((BthDevice)deviceListView.getItemAtPosition(i)).adresse, bteSerachCallback);
+            presenter.connect_sensor(getContext(),
+                    ((BthDevice)deviceListView.getItemAtPosition(i)).adresse,
+                    ((BthDevice)deviceListView.getItemAtPosition(i)).type,
+                    bteSerachCallback);
         });
 
         permissionCheck();
@@ -235,7 +238,6 @@ public class SensorFragment extends android.support.v4.app.Fragment
 
     private void showIsConnected() {
         inforamtionTable.setVisibility(View.VISIBLE);
-
         disconnectSensor.setVisibility(View.VISIBLE);
 
         scanSensor.setVisibility(View.INVISIBLE);
@@ -252,7 +254,6 @@ public class SensorFragment extends android.support.v4.app.Fragment
 
     private void showIsDisconnected() {
         inforamtionTable.setVisibility(View.GONE);
-
         disconnectSensor.setVisibility(View.INVISIBLE);
 
         scanSensor.setEnabled(true);
@@ -267,9 +268,11 @@ public class SensorFragment extends android.support.v4.app.Fragment
     }
 
     private void showIsConnecting(){
+        inforamtionTable.setVisibility(View.GONE);
         disconnectSensor.setVisibility(View.INVISIBLE);
 
         scanSensor.setEnabled(false);
+        scanSensor.setVisibility(View.VISIBLE);
         deviceListContainer.setVisibility(View.VISIBLE);
         loaderCycle.setVisibility(View.VISIBLE);
 
@@ -298,6 +301,7 @@ public class SensorFragment extends android.support.v4.app.Fragment
     }
 
     private void showIsRecording() {
+        inforamtionTable.setVisibility(View.VISIBLE);
         disconnectSensor.setVisibility(View.VISIBLE);
 
         scanSensor.setVisibility(View.INVISIBLE);

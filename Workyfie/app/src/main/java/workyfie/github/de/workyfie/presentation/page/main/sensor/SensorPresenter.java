@@ -5,10 +5,11 @@ import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Handler;
-import android.support.v4.app.FragmentActivity;
+import android.util.Log;
 
 import java.util.ArrayList;
 
+import info.plux.pluxapi.Communication;
 import workyfie.github.de.workyfie.application.bitalino.BitalinoProxy;
 import workyfie.github.de.workyfie.application.bitalino.state.BitalinoStateConnected;
 import workyfie.github.de.workyfie.application.bitalino.state.BitalinoStateRecording;
@@ -98,10 +99,21 @@ public class SensorPresenter implements Presenter<SensorView> {
         }
     }
 
-    public void connect_sensor(Context context, String adresse, BTESerachCallback serachCallback) {
+    public void connect_sensor(Context context, String adresse, int type, BTESerachCallback serachCallback) {
         scanDevice(false, serachCallback);
 
-        bitalino.initBitalinoCommunicationBLE(context);
+        Communication communication = Communication.getById(type);
+        if(communication.equals(Communication.DUAL) || communication.equals(Communication.BLE)){
+            bitalino.initBitalinoCommunicationBLE(context);
+        }
+        else if (communication.equals(Communication.BTH)) {
+            bitalino.initBitalinoCommunicationBTH(context);
+        }else{
+            Log.e(TAG, "unsupportd/unknow bluetooth connection");
+            view.errMsg("Fehler beim Verbinden mit dem Sensor.");
+            return;
+        }
+
         if (!bitalino.connect_sensor(adresse)) {
             view.errMsg("Fehler beim Verbinden mit dem Sensor. Ist BT eingeschaltet?");
         }

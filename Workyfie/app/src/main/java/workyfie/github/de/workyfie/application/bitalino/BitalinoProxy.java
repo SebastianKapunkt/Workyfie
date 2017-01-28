@@ -28,7 +28,7 @@ public class BitalinoProxy {
         this.initBitalinoCommunication(context, Communication.BLE);
     }
 
-    public void initBitalinoCommunicationBHE(Context context) {
+    public void initBitalinoCommunicationBTH(Context context) {
         this.initBitalinoCommunication(context, Communication.BTH);
     }
 
