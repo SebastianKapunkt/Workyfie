@@ -8,24 +8,6 @@
     android:layout_marginBottom="10dp">
 
     <RelativeLayout
-        android:id="@+id/graph_container"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="4dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="8dp"
-        android:layout_marginTop="4dp"
-        android:background="@drawable/rectangle"
-        android:elevation="4dp"
-        android:orientation="vertical">
-
-        <com.jjoe64.graphview.GraphView
-            android:id="@+id/graph"
-            android:layout_width="match_parent"
-            android:layout_height="300dip" />
-    </RelativeLayout>
-
-    <RelativeLayout
         android:id="@+id/info_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -33,17 +15,47 @@
         android:layout_marginLeft="8dp"
         android:layout_marginRight="8dp"
         android:layout_marginTop="4dp"
-        android:layout_below="@+id/graph_container"
         android:background="@drawable/rectangle"
         android:elevation="4dp"
         android:orientation="vertical">
 
         <TextView
-            android:text="TextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
+            android:paddingLeft="4dp"
+            android:paddingTop="10dp"
             android:id="@+id/textNoConnected" />
+
+        <Button
+            android:id="@+id/change_to_sensor"
+            style="?android:attr/buttonBarButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="@string/change_to_sensor"
+            android:layout_below="@+id/textNoConnected"
+            android:layout_alignParentEnd="true" />
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/graph_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="4dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginTop="4dp"
+        android:layout_below="@+id/info_container"
+        android:background="@drawable/rectangle"
+        android:elevation="4dp"
+        android:orientation="vertical">
+
+        <com.jjoe64.graphview.GraphView
+            android:id="@+id/graph"
+            android:layout_width="match_parent"
+            android:layout_height="250dip" />
     </RelativeLayout>
 
     <RelativeLayout
@@ -54,7 +66,7 @@
         android:layout_marginLeft="8dp"
         android:layout_marginRight="8dp"
         android:layout_marginTop="4dp"
-        android:layout_below="@+id/info_container"
+        android:layout_below="@+id/graph_container"
         android:background="@drawable/rectangle"
         android:elevation="4dp"
         android:orientation="vertical">

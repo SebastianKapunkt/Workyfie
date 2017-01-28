@@ -33,6 +33,8 @@
     <string name="permission_check_dialog_message">Biitte erlauben Sie den Zugriff auf dem Standort für diese App, damit der Scan nach dem Bitalino-Sensor auch funktioniert.</string>
     <string name="available_device">Verfügbare Geräte</string>
     <string name="no_devices">Keine Geräte verfügbar</string>
+    <string name="text_no_connect"><![CDATA[<p><b>Es besteht keine Verindung zum Sensor.</b></p> Stelle eine Verbindung zum Sensor her, um eine Session zu starten.]]></string>
+    <string name="change_to_sensor">zum Sensor gehen</string>
     <string name="what_is_eeg">Was ist EEG?</string>
     <string name="place_eeg_sensor">EEG Sensor platzieren</string>
     <string name="do_pause">Pausen machen</string>

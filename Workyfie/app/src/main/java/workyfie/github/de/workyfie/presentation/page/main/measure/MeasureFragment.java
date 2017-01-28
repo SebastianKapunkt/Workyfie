@@ -28,6 +28,9 @@ import workyfie.github.de.workyfie.application.bitalino.state.BitalinoStateConne
 import workyfie.github.de.workyfie.application.bitalino.state.BitalinoStateDisconnected;
 import workyfie.github.de.workyfie.application.bitalino.state.BitalinoStateRecording;
 import workyfie.github.de.workyfie.application.bitalino.state.IBitalinoState;
+import workyfie.github.de.workyfie.presentation.page.main.MainActivity;
+import workyfie.github.de.workyfie.presentation.page.main.sidebar.SidebarFragment;
+import workyfie.github.de.workyfie.presentation.page.main.sidebar.SidebarItem;
 
 public class MeasureFragment extends Fragment implements MeasureView, View.OnClickListener {
 
@@ -43,6 +46,7 @@ public class MeasureFragment extends Fragment implements MeasureView, View.OnCli
     private GraphView graphView;
     private Button startRecord;
     private Button stopRecord;
+    private Button changeToSensor;
     private TextView infoNoConnect;
 
     private AlertDialog alertDialog;
@@ -79,6 +83,7 @@ public class MeasureFragment extends Fragment implements MeasureView, View.OnCli
         infoNoConnectContainer = (RelativeLayout) rootView.findViewById(R.id.info_container);
         startRecord = (Button) rootView.findViewById(R.id.start_record);
         stopRecord = (Button) rootView.findViewById(R.id.stop_record);
+        changeToSensor = (Button) rootView.findViewById(R.id.change_to_sensor);
         graphView = (GraphView) rootView.findViewById(R.id.graph);
         infoNoConnect = (TextView) rootView.findViewById(R.id.textNoConnected);
 
@@ -91,7 +96,7 @@ public class MeasureFragment extends Fragment implements MeasureView, View.OnCli
         graphView.getViewport().setMinX(0);
         graphView.getViewport().setMaxX(40);
 
-        String textNoConnect = "Es besteht keine Verindung zum Sensor. Stelle eine Verbindung zum Sensor her - <font color='" + getResources().getColor(R.color.colorAccent) + "'>Hauptmenü --> Sensor</font> - um eine Session zu starten.";
+        String textNoConnect = getString(R.string.text_no_connect);
         infoNoConnect.setText(Html.fromHtml(textNoConnect));
 
         stateChangeCallback = state -> presenter.handleBroadcastViewState(state);
@@ -119,12 +124,14 @@ public class MeasureFragment extends Fragment implements MeasureView, View.OnCli
 
         startRecord.setOnClickListener(this);
         stopRecord.setOnClickListener(this);
+        changeToSensor.setOnClickListener(this);
     }
 
     @Override
     public void onPause() {
         startRecord.setOnClickListener(null);
         stopRecord.setOnClickListener(null);
+        changeToSensor.setOnClickListener(null);
 
         bitalinoReceiveHandler.unsubscribeData(dataNewCallback);
         bitalinoReceiveHandler.unsubscribeState(stateChangeCallback);
@@ -149,6 +156,9 @@ public class MeasureFragment extends Fragment implements MeasureView, View.OnCli
                 break;
             case R.id.stop_record:
                 presenter.stop_reording(App.getApplication());
+                break;
+            case R.id.change_to_sensor:
+                ((MainActivity)getActivity()).onSidebarItemClicked(SidebarItem.SENSOR);
                 break;
         }
     }
