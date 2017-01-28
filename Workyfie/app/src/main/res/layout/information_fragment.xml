@@ -1,6 +1,124 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
 
-</LinearLayout>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    >
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="vertical">
+
+        <RelativeLayout
+            android:id="@+id/what_is_eeg_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="5dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_marginTop="5dp"
+            android:background="@drawable/rectangle"
+            android:elevation="4dp">
+
+            <TextView
+                android:id="@+id/textView1"
+                style="@style/session_table_key"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/border_bottom"
+                android:text="@string/what_is_eeg" />
+
+            <ImageView
+                android:id="@+id/eeg_image"
+                android:layout_width="150dp"
+                android:layout_height="150dp"
+                android:layout_marginTop="10dp"
+                android:layout_centerHorizontal="true"
+                android:layout_below="@+id/textView1"
+                app:srcCompat="@mipmap/eeg_icon" />
+
+            <TextView
+                android:text="@string/lorem_ipsum"
+                style="@style/large_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/eeg_image" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/eeg_sensor_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="5dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_marginTop="5dp"
+            android:layout_below="@+id/what_is_eeg_container"
+            android:background="@drawable/rectangle"
+            android:elevation="4dp">
+
+            <TextView
+                android:id="@+id/textView2"
+                style="@style/session_table_key"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/border_bottom"
+                android:text="@string/place_eeg_sensor" />
+
+            <TextView
+                android:id="@+id/textView4"
+                android:text="@string/lorem_ipsum_short"
+                style="@style/large_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/textView2" />
+
+            <ImageView
+                android:id="@+id/sensor_place_image"
+                android:layout_width="150dp"
+                android:layout_height="150dp"
+                android:layout_marginTop="10dp"
+                android:layout_centerHorizontal="true"
+                android:layout_below="@+id/textView4"
+                app:srcCompat="@mipmap/sensor_place" />
+
+            <TextView
+                android:text="@string/lorem_ipsum_short"
+                style="@style/large_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/sensor_place_image" />
+        </RelativeLayout>
+        <RelativeLayout
+            android:id="@+id/pause_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="5dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_marginTop="5dp"
+            android:layout_below="@+id/eeg_sensor_container"
+            android:background="@drawable/rectangle"
+            android:elevation="4dp">
+
+            <TextView
+                android:id="@+id/textView3"
+                style="@style/session_table_key"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/border_bottom"
+                android:text="@string/do_pause" />
+
+            <TextView
+                android:text="@string/lorem_ipsum"
+                style="@style/large_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/textView3" />
+        </RelativeLayout>
+
+    </RelativeLayout>
+</ScrollView>
