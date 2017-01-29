@@ -1,9 +1,11 @@
 package workyfie.github.de.workyfie.data.repos.graphdatapoint;
 
+import java.util.Collections;
 import java.util.List;
 
 import rx.Observable;
 import workyfie.github.de.workyfie.data.view.models.GraphDataPoint;
+import workyfie.github.de.workyfie.presentation.page.main.historie.detail.GraphDataPointComparator;
 
 public class GraphDataPointRepository {
 
@@ -22,7 +24,10 @@ public class GraphDataPointRepository {
                 .switchIfEmpty(
                         persistance.getBySessionId(sessionId)
                                 .flatMap(cache::save)
-                );
+                ).map(graphDataPoints -> {
+                    Collections.sort(graphDataPoints, new GraphDataPointComparator());
+                    return graphDataPoints;
+                });
     }
 
     public Observable<GraphDataPoint> saveToTemp(GraphDataPoint graphDataPoint) {
@@ -38,5 +43,11 @@ public class GraphDataPointRepository {
     public Observable<GraphDataPoint> save(GraphDataPoint graphDataPoint) {
         return persistance.save(graphDataPoint)
                 .flatMap(cache::save);
+    }
+
+    public Observable<List<GraphDataPoint>> save(List<GraphDataPoint> graphDataPoints) {
+        return Observable.from(graphDataPoints)
+                .flatMap(this::save)
+                .toList();
     }
 }

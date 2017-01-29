@@ -1,38 +1,97 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginBottom="8dp"
+    android:layout_marginLeft="8dp"
+    android:layout_marginRight="8dp"
+    android:layout_marginTop="8dp"
+    android:background="@drawable/rectangle"
+    android:elevation="4dp"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <EditText
+            android:id="@+id/name_field"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="20dp"
+            android:layout_weight="10"
+            android:textSize="25sp" />
+
+        <ProgressBar
+            android:id="@+id/progressbar"
+            style="?android:attr/progressBarStyle"
+            android:layout_width="wrap_content"
+            android:layout_margin="20dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="10dp" />
+    </LinearLayout>
 
     <com.jjoe64.graphview.GraphView
-        android:paddingStart="30dp"
-        android:paddingEnd="5dp"
-        android:layout_marginStart="5dp"
         android:id="@+id/graph"
         android:layout_width="match_parent"
-        android:layout_height="300dip" />
+        android:layout_height="300dip"
+        android:layout_marginEnd="5dp"
+        android:layout_marginStart="5dp"
+        android:paddingEnd="5dp"
+        android:paddingStart="30dp" />
 
     <TextView
-        android:id="@+id/id_field"
+        android:id="@+id/date_field"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="placeholder" />
+        android:layout_margin="10dp"
+        android:gravity="center"
+        android:text="TT MMM YYYY"
+        android:textSize="18dp" />
 
-    <TextView
-        android:id="@+id/name_field"
+    <TableLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="placeholder" />
+        android:layout_height="wrap_content">
 
-    <TextView
-        android:id="@+id/start_time_field"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="placeholder" />
+        <TableRow>
 
-    <TextView
-        android:id="@+id/end_time_field"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="placeholder" />
+            <TextView
+                android:id="@+id/duration_key"
+                style="@style/history_text_field.weight_one"
+                android:text="@string/duration" />
 
+            <TextView
+                android:id="@+id/duration_field"
+                style="@style/history_text_field.weight_two"
+                android:text="placeholder" />
+        </TableRow>
+
+        <TableRow>
+
+            <TextView
+                android:id="@+id/start_time_key"
+                style="@style/history_text_field.weight_one"
+                android:text="@string/start" />
+
+            <TextView
+                android:id="@+id/start_time_field"
+                style="@style/history_text_field.weight_two"
+                android:text="placeholder" />
+        </TableRow>
+
+        <TableRow>
+
+            <TextView
+                android:id="@+id/end_time_key"
+                style="@style/history_text_field.weight_one"
+                android:text="@string/stop" />
+
+            <TextView
+                android:id="@+id/end_time_field"
+                style="@style/history_text_field.weight_two"
+                android:text="placeholder" />
+        </TableRow>
+    </TableLayout>
 </LinearLayout>

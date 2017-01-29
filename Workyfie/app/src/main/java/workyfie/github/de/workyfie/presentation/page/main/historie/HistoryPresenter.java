@@ -56,18 +56,6 @@ public class HistoryPresenter implements Presenter<HistoryView>,
         subscription().add(
                 repository
                         .list()
-                        .switchIfEmpty(
-                                Observable.create(subscriber -> {
-                                    List<Session> sessions = new ArrayList<>();
-
-                                    for (int i = 0; i < 10; i++) {
-                                        sessions.add(new Session(i + "", i + "TEST DATA", Instant.now(), Instant.now()));
-                                    }
-
-                                    subscriber.onNext(sessions);
-                                    subscriber.onCompleted();
-                                })
-                        )
                         .subscribeOn(threadingModule.getIOScheduler())
                         .observeOn(threadingModule.getMainScheduler())
                         .subscribe(this)

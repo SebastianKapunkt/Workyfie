@@ -2,6 +2,8 @@ package workyfie.github.de.workyfie;
 
 import android.app.Application;
 
+import com.jakewharton.threetenabp.AndroidThreeTen;
+
 import io.realm.Realm;
 import workyfie.github.de.workyfie.application.ApplicationComponent;
 import workyfie.github.de.workyfie.application.bitalino.config.BitalinoConfig;
@@ -28,6 +30,7 @@ public class App extends Application {
         instance = this;
         applicationComponent = new ApplicationComponent(instance);
         Realm.init(this);
+        AndroidThreeTen.init(this);
 
         bitalinoReceiver = new BitalinoBroadcastReceiver(App.getComponent().getBitalinoReceiveHandler(),
                 BitalinoConfig.BITALINO_CONFIG_EEG);

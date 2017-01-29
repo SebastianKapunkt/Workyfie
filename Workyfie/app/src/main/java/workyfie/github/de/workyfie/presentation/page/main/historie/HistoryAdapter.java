@@ -65,7 +65,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
 
         public ViewHolder(View v) {
             super(v);
-            id = (TextView) v.findViewById(R.id.id_field);
+            id = (TextView) v.findViewById(R.id.date_field);
             name = (TextView) v.findViewById(R.id.name_field);
             startTime = (TextView) v.findViewById(R.id.start_time_field);
             endTime = (TextView) v.findViewById(R.id.end_time_field);

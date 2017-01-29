@@ -32,12 +32,17 @@ public class SessionPersistanceDataSource {
     public Observable<Session> save(Session session) {
         return Observable.create(subscriber -> {
             Realm realm = Realm.getDefaultInstance();
+            Session value;
 
-            Session value = Session.setId(session, getNextKey(realm));
+            if (session.id.isEmpty()) {
+                value = Session.setId(session, getNextKey(realm));
+            } else {
+                value = session;
+            }
 
             try {
                 realm.beginTransaction();
-                realm.copyToRealm(converter.to(value));
+                realm.copyToRealmOrUpdate(converter.to(value));
                 realm.commitTransaction();
             } catch (Exception e) {
                 e.printStackTrace();

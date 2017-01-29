@@ -1,6 +1,7 @@
 package workyfie.github.de.workyfie.presentation.page.main.historie.detail;
 
 import android.util.Log;
+import android.widget.ProgressBar;
 
 import com.jjoe64.graphview.series.DataPoint;
 
@@ -10,10 +11,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.TimeUnit;
 
 import rx.Observable;
 import rx.Observer;
 import rx.functions.Func1;
+import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
 import workyfie.github.de.workyfie.application.modules.ThreadingModule;
 import workyfie.github.de.workyfie.data.repos.graphdatapoint.GraphDataPointRepository;
@@ -86,28 +89,29 @@ public class HistoryDetailPresenter implements
     void requestContent() {
         subscription().add(
                 Observable.zip(
-                        sessionRepository.get(sessionId)
-                                .switchIfEmpty(Observable.just(
-                                        new Session(sessionId, sessionId + " TEST DATA", Instant.now(), Instant.now())
-                                )),
-                        graphRepository.getBySessionId(sessionId)
-                                .switchIfEmpty(Observable.create(subscriber -> {
-
-                                    List<GraphDataPoint> points = new ArrayList<>();
-                                    for (int i = 0; i < 100; i++) {
-                                        Random rnd = new Random();
-                                        points.add(new GraphDataPoint(i + "", sessionId, (double) i, 0 + (rnd.nextDouble() * (1000))));
-                                    }
-
-                                    subscriber.onNext(points);
-                                    subscriber.onCompleted();
-                                }))
-                                .map(graphDataPoints -> {
-                                    Collections.sort(graphDataPoints, new GraphDataPointComparator());
-                                    return graphDataPoints;
-                                }),
+                        sessionRepository.get(sessionId),
+                        graphRepository.getBySessionId(sessionId),
                         Tuple2::new
                 )
+                        .subscribeOn(threadingModule.getIOScheduler())
+                        .observeOn(threadingModule.getMainScheduler())
+                        .subscribe(this)
+        );
+    }
+
+    public void setTextChangeObserver(PublishSubject<String> textChangeObserver) {
+        subscription().add(
+                textChangeObserver
+                        .debounce(1000, TimeUnit.MILLISECONDS)
+                        .flatMap(name ->
+                                Observable.zip(
+                                        sessionRepository
+                                                .get(sessionId)
+                                                .map(session -> Session.setName(session, name))
+                                                .flatMap(sessionRepository::save),
+                                        graphRepository.getBySessionId(sessionId),
+                                        Tuple2::new
+                                ))
                         .subscribeOn(threadingModule.getIOScheduler())
                         .observeOn(threadingModule.getMainScheduler())
                         .subscribe(this)

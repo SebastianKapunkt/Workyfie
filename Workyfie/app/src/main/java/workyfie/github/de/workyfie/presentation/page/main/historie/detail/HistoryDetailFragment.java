@@ -1,16 +1,25 @@
 package workyfie.github.de.workyfie.presentation.page.main.historie.detail;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.series.LineGraphSeries;
 
+import org.threeten.bp.Duration;
+import org.threeten.bp.LocalDateTime;
+import org.threeten.bp.ZoneId;
 import org.threeten.bp.ZoneOffset;
 import org.threeten.bp.format.DateTimeFormatter;
 import org.threeten.bp.format.FormatStyle;
@@ -18,6 +27,7 @@ import org.threeten.bp.format.FormatStyle;
 import java.util.List;
 import java.util.Locale;
 
+import rx.subjects.PublishSubject;
 import workyfie.github.de.workyfie.App;
 import workyfie.github.de.workyfie.R;
 import workyfie.github.de.workyfie.data.view.models.GraphDataPoint;
@@ -31,10 +41,33 @@ public class HistoryDetailFragment extends Fragment implements HistoryDetailView
     private HistoryDetailPresenter presenter;
     private GraphView graphView;
     private LineGraphSeries<GraphDataPoint> series;
-    private TextView name;
-    private TextView id;
+    private EditText name;
+    private TextView dateView;
+    private TextView durationView;
     private TextView startTime;
     private TextView endTime;
+    private View progressBar;
+    private final PublishSubject<String> onClickNameField = PublishSubject.create();
+
+    private final TextWatcher watcher = new TextWatcher() {
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+        }
+
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+        }
+
+        @Override
+        public void afterTextChanged(Editable s) {
+            if (s.length() > 0) {
+                progressBar.setVisibility(View.VISIBLE);
+                onClickNameField.onNext(s.toString());
+            }
+        }
+    };
 
     public static HistoryDetailFragment newInstance(String id) {
         Bundle args = new Bundle();
@@ -62,14 +95,16 @@ public class HistoryDetailFragment extends Fragment implements HistoryDetailView
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.hisotry_detail_fragment, container, false);
 
-        id = (TextView) rootView.findViewById(R.id.id_field);
-        name = (TextView) rootView.findViewById(R.id.name_field);
+        name = (EditText) rootView.findViewById(R.id.name_field);
+        durationView = (TextView) rootView.findViewById(R.id.duration_field);
+        dateView = (TextView) rootView.findViewById(R.id.date_field);
         startTime = (TextView) rootView.findViewById(R.id.start_time_field);
         endTime = (TextView) rootView.findViewById(R.id.end_time_field);
         graphView = (GraphView) rootView.findViewById(R.id.graph);
+        progressBar = rootView.findViewById(R.id.progressbar);
 
         graphView.setTitle("EEG Daten");
-        graphView.setTitleColor(R.color.colorPrimary);
+        graphView.setTitleColor(R.color.primaryTextDark);
         graphView.getViewport().setXAxisBoundsManual(true);
         graphView.getViewport().setMinX(0);
         graphView.getViewport().setMaxX(40);
@@ -79,6 +114,9 @@ public class HistoryDetailFragment extends Fragment implements HistoryDetailView
         graphView.getViewport().setScrollable(true);
 
         series = new LineGraphSeries<>();
+        series.setColor(getResources().getColor(R.color.colorAccentDark));
+        series.setAnimated(true);
+        series.setThickness(10);
         graphView.addSeries(series);
 
         return rootView;
@@ -99,6 +137,7 @@ public class HistoryDetailFragment extends Fragment implements HistoryDetailView
     @Override
     public void onPause() {
         super.onPause();
+        name.removeTextChangedListener(watcher);
     }
 
     @Override
@@ -109,16 +148,53 @@ public class HistoryDetailFragment extends Fragment implements HistoryDetailView
 
     @Override
     public void drawContent(Tuple2<Session, List<GraphDataPoint>> items) {
+        name.removeTextChangedListener(watcher);
         series.resetData(new GraphDataPoint[]{});
+        progressBar.setVisibility(View.INVISIBLE);
+
+        View view = getActivity().getCurrentFocus();
+        if (view != null) {
+            InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        }
+
         for (GraphDataPoint point : items.item2) {
             series.appendData(point, true, 100);
         }
 
-        DateTimeFormatter formatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT).withLocale(Locale.UK).withZone(ZoneOffset.UTC);
+        graphView.requestFocus();
 
-        id.setText(String.format("id: %s", items.item1.id));
-        name.setText(String.format("name: %s", items.item1.name));
-        startTime.setText(String.format("startTime: %s", formatter.format(items.item1.startTime)));
-        endTime.setText(String.format("endTime: %s", formatter.format(items.item1.endTime)));
+        LocalDateTime startDateTime = LocalDateTime.ofInstant(items.item1.startTime, ZoneId.systemDefault());
+        LocalDateTime endDateTime = LocalDateTime.ofInstant(items.item1.endTime, ZoneId.systemDefault());
+
+        name.setText(String.format("%s", items.item1.name));
+        dateView.setText(String.format(
+                "%s %s %s",
+                startDateTime.getDayOfMonth(),
+                startDateTime.getMonth(),
+                startDateTime.getYear())
+        );
+        durationView.setText(String.format(
+                "%s h %s min %s sek",
+                Duration.between(items.item1.startTime, items.item1.endTime).toHours(),
+                Duration.between(items.item1.startTime, items.item1.endTime).toMinutes(),
+                Duration.between(items.item1.startTime, items.item1.endTime).toMillis() / 1000)
+        );
+        startTime.setText(String.format(
+                "%s:%s:%s",
+                startDateTime.getHour(),
+                startDateTime.getMinute(),
+                startDateTime.getSecond()
+        ));
+        endTime.setText(String.format(
+                "%s:%s:%s",
+                endDateTime.getHour(),
+                endDateTime.getMinute(),
+                endDateTime.getSecond()
+        ));
+        name.addTextChangedListener(watcher);
+        presenter.setTextChangeObserver(onClickNameField);
     }
+
+
 }

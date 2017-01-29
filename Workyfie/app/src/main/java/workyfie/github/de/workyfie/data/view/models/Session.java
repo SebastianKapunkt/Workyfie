@@ -41,4 +41,13 @@ public class Session {
                 session.endTime
         );
     }
+
+    public static Session setName(Session session, String name) {
+        return new Session(
+                session.id,
+                name,
+                session.startTime,
+                session.endTime
+        );
+    }
 }
