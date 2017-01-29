@@ -5,6 +5,7 @@ import android.util.Log;
 import org.threeten.bp.Instant;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import rx.Observable;
 import rx.Observer;
@@ -17,6 +18,7 @@ import workyfie.github.de.workyfie.data.repos.graphdatapoint.GraphDataPointRepos
 import workyfie.github.de.workyfie.data.repos.session.SessionRepository;
 import workyfie.github.de.workyfie.data.view.models.GraphDataPoint;
 
+import static org.threeten.bp.temporal.ChronoField.MILLI_OF_SECOND;
 import static workyfie.github.de.workyfie.presentation.page.main.sensor.SensorPresenter.TAG;
 
 public class BitalinoReceiveHandler implements IBitalinoOnReceiveCallback {
@@ -25,6 +27,7 @@ public class BitalinoReceiveHandler implements IBitalinoOnReceiveCallback {
 
     private String currentSessionId;
     private Instant oldInstant;
+    private List<GraphDataPoint> pointList;
 
     private GraphDataPointRepository graphDataPointRepository;
     private SessionRepository sessionRepository;
@@ -49,6 +52,7 @@ public class BitalinoReceiveHandler implements IBitalinoOnReceiveCallback {
         this.threadingModule = threadingModule;
 
         currentSessionId = "";
+        pointList = new ArrayList<>();
     }
 
     public boolean subscribeState(IBitalinoReceiverStateCallback subscriber) {
@@ -81,6 +85,7 @@ public class BitalinoReceiveHandler implements IBitalinoOnReceiveCallback {
         //clear old Data
         graphDataPointRepository.getFromTemp();
         oldInstant = null;
+        pointList = new ArrayList<>();
     }
 
 
@@ -98,7 +103,7 @@ public class BitalinoReceiveHandler implements IBitalinoOnReceiveCallback {
 
     @Override
     public void onReceiveData(SensorData sensorData) {
-        if (currentSessionId == "") {
+        if (currentSessionId.isEmpty()) {
             try {
                 throw new Exception("Session Id is not set");
             } catch (Exception e) {
@@ -106,85 +111,71 @@ public class BitalinoReceiveHandler implements IBitalinoOnReceiveCallback {
             }
         }
 
-        subscription.add(
-                graphDataPointRepository.saveToTemp(new GraphDataPoint("", String.valueOf(currentSessionId), (double) 0, (double) sensorData.data))
-                        .subscribeOn(threadingModule.getIOScheduler())
-                        .observeOn(threadingModule.getMainScheduler())
-                        .subscribe(new Observer<GraphDataPoint>() {
-                            @Override
-                            public void onCompleted() {
-                            }
-
-                            @Override
-                            public void onError(Throwable e) {
-                                e.printStackTrace();
-                            }
-
-                            @Override
-                            public void onNext(GraphDataPoint dataPoint) {
-                            }
-                        })
-        );
-
+        pointList.add(new GraphDataPoint("", String.valueOf(currentSessionId), (double) 0, (double) sensorData.data));
         //Check Time
         if (oldInstant == null) {
             oldInstant = Instant.now();
             return;
         }
+
         //zeitintervall 1 Sekunde
-        if (Instant.now().getEpochSecond() - oldInstant.getEpochSecond() > 0.5) {
+        if (Instant.now().toEpochMilli() - oldInstant.toEpochMilli() > 500) {
             oldInstant = Instant.now();
 
+            List<GraphDataPoint> copyList = new ArrayList<>(pointList);
+            subscription.add(
+                    sessionRepository.get(String.valueOf(currentSessionId))
+                            .flatMap(session ->
+                                    Observable.zip(
+                                            Observable.just((double) (Instant.now().toEpochMilli() - session.startTime.toEpochMilli()) / 1000),
+                                            Observable.just(copyList),
+                                            (diff, data) -> {
+                                                Double sum = 0.0;
 
-            sessionRepository.get(String.valueOf(currentSessionId))
-                    .flatMap(session ->
-                            Observable.zip(
-                                    Observable.just((double) (Instant.now().getEpochSecond() - session.startTime.getEpochSecond())),
-                                    graphDataPointRepository.getFromTemp().filter(data -> data.size() > 0),
-                                    (diff, data) -> {
-                                        Double sum = 0.0;
+                                                for (GraphDataPoint point : data) {
+                                                    sum = sum + point.y;
+                                                }
 
-                                        for (GraphDataPoint point : data) {
-                                            sum = sum + point.y;
-                                        }
+                                                return new GraphDataPoint(
+                                                        String.valueOf(System.currentTimeMillis()),
+                                                        Integer.valueOf(currentSessionId).toString(),
+                                                        diff,
+                                                        sum / data.size()
+                                                );
+                                            })
+                                            .observeOn(threadingModule.getMainScheduler())
+                                            .doOnNext(data -> pointList = new ArrayList<>())
+                                            .observeOn(threadingModule.getIOScheduler())
+                            )
+                            .flatMap(graphDataPointRepository::save)
+                            .subscribeOn(threadingModule.getIOScheduler())
+                            .observeOn(threadingModule.getMainScheduler())
+                            .subscribe(new Observer<GraphDataPoint>() {
+                                @Override
+                                public void onCompleted() {
+                                    Log.i(TAG, "completed");
+                                }
 
-                                        return new GraphDataPoint(
-                                                String.valueOf(System.currentTimeMillis()),
-                                                Integer.valueOf(currentSessionId).toString(),
-                                                diff,
-                                                sum / data.size()
-                                        );
-                                    })
-                    )
-                    .flatMap(graphDataPointRepository::save)
-                    .subscribeOn(threadingModule.getIOScheduler())
-                    .observeOn(threadingModule.getMainScheduler())
-                    .subscribe(new Observer<GraphDataPoint>() {
-                        @Override
-                        public void onCompleted() {
-                            Log.i(TAG, "completed");
-                        }
+                                @Override
+                                public void onError(Throwable e) {
+                                    e.printStackTrace();
+                                }
 
-                        @Override
-                        public void onError(Throwable e) {
-//                            Log.e(TAG, e.getMessage());
-                            e.printStackTrace();
-                        }
-
-                        @Override
-                        public void onNext(GraphDataPoint graphDataPoint) {
-                            Log.i(TAG, "new GrapDataPoint: "
-                                    + graphDataPoint.id
-                                    + " x: "
-                                    + graphDataPoint.x
-                                    + " y: "
-                                    + graphDataPoint.y
-                                    + " sessionId: "
-                                    + graphDataPoint.sessionId
-                            );
-                            notityAllNewData(graphDataPoint);
-                        }
-                    });
+                                @Override
+                                public void onNext(GraphDataPoint graphDataPoint) {
+                                    Log.i(TAG, "new GrapDataPoint: "
+                                            + graphDataPoint.id
+                                            + " x: "
+                                            + graphDataPoint.x
+                                            + " y: "
+                                            + graphDataPoint.y
+                                            + " sessionId: "
+                                            + graphDataPoint.sessionId
+                                    );
+                                    notityAllNewData(graphDataPoint);
+                                }
+                            })
+            );
         }
     }
 

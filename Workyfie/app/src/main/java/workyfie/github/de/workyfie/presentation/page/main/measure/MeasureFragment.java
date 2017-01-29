@@ -91,7 +91,6 @@ public class MeasureFragment extends Fragment implements MeasureView, View.OnCli
 
         series = new LineGraphSeries<>();
         series.setColor(getResources().getColor(R.color.colorAccentDark));
-        series.setAnimated(true);
         series.setThickness(10);
 
         graphView.addSeries(series);

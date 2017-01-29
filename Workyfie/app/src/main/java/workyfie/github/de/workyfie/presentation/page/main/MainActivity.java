@@ -1,8 +1,7 @@
 package workyfie.github.de.workyfie.presentation.page.main;
 
-import android.nfc.Tag;
+import android.app.Fragment;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
@@ -152,7 +151,7 @@ public class MainActivity extends AppCompatActivity implements SidebarFragment.C
         super.onBackPressed();
 
         SidebarItem item;
-        Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.container_main);
+        Fragment currentFragment = getFragmentManager().findFragmentById(R.id.container_main);
         if (currentFragment instanceof MeasureFragment) {
             item = SidebarItem.MEASURE;
         } else if (currentFragment instanceof SensorFragment) {
