@@ -112,6 +112,12 @@ public class SidebarAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         return selectedItem;
     }
 
+    public void setSelectedItem(SidebarItem selectedItem) {
+        selectedView.setSelected(false);
+        this.selectedItem = selectedItem;
+        notifyDataSetChanged();
+    }
+
     public void setCallback(SidebarFragment callback) {
         this.callback = callback;
     }

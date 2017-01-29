@@ -1,12 +1,15 @@
 package workyfie.github.de.workyfie.presentation.page.main;
 
+import android.nfc.Tag;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.ImageView;
@@ -21,9 +24,11 @@ import workyfie.github.de.workyfie.application.bitalino.state.BitalinoStateDisco
 import workyfie.github.de.workyfie.application.bitalino.state.IBitalinoState;
 import workyfie.github.de.workyfie.presentation.common.FragmentUtils;
 import workyfie.github.de.workyfie.presentation.page.main.historie.HistoryFragment;
+import workyfie.github.de.workyfie.presentation.page.main.historie.detail.HistoryDetailFragment;
 import workyfie.github.de.workyfie.presentation.page.main.information.InformationFragment;
 import workyfie.github.de.workyfie.presentation.page.main.measure.MeasureFragment;
 import workyfie.github.de.workyfie.presentation.page.main.sensor.SensorFragment;
+import workyfie.github.de.workyfie.presentation.page.main.sidebar.SelectedCallback;
 import workyfie.github.de.workyfie.presentation.page.main.sidebar.SidebarFragment;
 import workyfie.github.de.workyfie.presentation.page.main.sidebar.SidebarItem;
 
@@ -35,6 +40,7 @@ public class MainActivity extends AppCompatActivity implements SidebarFragment.C
 
     private BitalinoReceiveHandler bitalinoReceiveHandler;
     private IBitalinoReceiverStateCallback stateChangeCallback;
+    private SelectedCallback callback;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -137,7 +143,32 @@ public class MainActivity extends AppCompatActivity implements SidebarFragment.C
 
         }
         setTitle(getResources().getString(sidebarItem.resTitle));
+        callback.setSelectedSidebarItem(sidebarItem);
         drawerLayout.closeDrawer(Gravity.LEFT);
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+
+        SidebarItem item;
+        Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.container_main);
+        if (currentFragment instanceof MeasureFragment) {
+            item = SidebarItem.MEASURE;
+        } else if (currentFragment instanceof SensorFragment) {
+            item = SidebarItem.SENSOR;
+        } else if (currentFragment instanceof InformationFragment) {
+            item = SidebarItem.INFORMATION;
+        } else if (currentFragment instanceof HistoryFragment) {
+            item = SidebarItem.HISTORY;
+        } else if (currentFragment instanceof HistoryDetailFragment) {
+            item = SidebarItem.HISTORY;
+        } else{
+            Log.e(TAG, "SidbarItem to Fragment not Found");
+            return;
+        }
+        setTitle(getResources().getString(item.resTitle));
+        callback.setSelectedSidebarItem(item);
     }
 
     public void onSensorStateChange(IBitalinoState state) {
@@ -150,5 +181,9 @@ public class MainActivity extends AppCompatActivity implements SidebarFragment.C
         } else if (state instanceof BitalinoStateConnecting) {
             image.setImageDrawable(getDrawable(R.drawable.bluetooth_connect));
         }
+    }
+
+    public void setSelectedCallback(SelectedCallback callback) {
+        this.callback = callback;
     }
 }

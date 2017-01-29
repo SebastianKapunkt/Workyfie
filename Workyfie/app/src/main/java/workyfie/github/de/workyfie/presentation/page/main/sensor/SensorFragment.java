@@ -38,6 +38,7 @@ import workyfie.github.de.workyfie.application.bitalino.state.BitalinoStateRecor
 import workyfie.github.de.workyfie.application.bitalino.state.IBitalinoState;
 import workyfie.github.de.workyfie.application.bth.BthDevice;
 import workyfie.github.de.workyfie.application.bth.IBTHReceiverFoundCallback;
+import workyfie.github.de.workyfie.presentation.page.main.sidebar.SidebarItem;
 
 import static android.Manifest.permission.ACCESS_COARSE_LOCATION;
 
@@ -339,4 +340,7 @@ public class SensorFragment extends Fragment
         }
     }
 
+    public interface Callback {
+        void setSidebarItem(SidebarItem item);
+    }
 }

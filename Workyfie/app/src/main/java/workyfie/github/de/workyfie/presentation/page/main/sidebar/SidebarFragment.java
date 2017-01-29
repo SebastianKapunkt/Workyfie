@@ -13,8 +13,9 @@ import java.util.Arrays;
 import java.util.List;
 
 import workyfie.github.de.workyfie.R;
+import workyfie.github.de.workyfie.presentation.page.main.MainActivity;
 
-public class SidebarFragment extends Fragment implements SidebarAdapter.Callback {
+public class SidebarFragment extends Fragment implements SidebarAdapter.Callback, SelectedCallback {
     public static final String TAG = SidebarFragment.class.getSimpleName();
     private static final String SAVED_STATE_SELECTED_MAIN_ITEM = "SAVED_STATE_SELECTED_MAIN_ITEM";
 
@@ -60,6 +61,7 @@ public class SidebarFragment extends Fragment implements SidebarAdapter.Callback
     public void onResume() {
         super.onResume();
         adapter.setCallback(this);
+        ((MainActivity) getActivity()).setSelectedCallback(this);
     }
 
     @Override
@@ -81,6 +83,11 @@ public class SidebarFragment extends Fragment implements SidebarAdapter.Callback
 
     private Container getContainer() {
         return (Container) getActivity();
+    }
+
+    @Override
+    public void setSelectedSidebarItem(SidebarItem sidebarItem) {
+        adapter.setSelectedItem(sidebarItem);
     }
 
     public interface Container {
