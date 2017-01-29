@@ -22,7 +22,7 @@ import workyfie.github.de.workyfie.presentation.mvp.Presenter;
 public class MeasurePresenter implements Presenter<MeasureView> {
     private static final String TAG = MeasurePresenter.class.getSimpleName();
 
-    private  MeasureView view;
+    private MeasureView view;
 
     private BitalinoProxy bitalino;
     private BitalinoReceiveHandler bitalinoReceiveHandler;
@@ -31,6 +31,8 @@ public class MeasurePresenter implements Presenter<MeasureView> {
     private CompositeSubscription subscription;
     private final ThreadingModule threadingModule;
     private SessionRepository sessionRepository;
+
+    private String sessionId;
 
     public MeasurePresenter(ThreadingModule threadingModule,
                             BitalinoProxy bitalino,
@@ -89,7 +91,7 @@ public class MeasurePresenter implements Presenter<MeasureView> {
                                        @Override
                                        public void onNext(Session session) {
                                            Log.i(TAG, "id " + session.id);
-
+                                           sessionId = session.id;
                                            bitalinoReceiveHandler.setNewSession(session.id);
                                            view.setGraphData(new DataPoint[]{});
 
@@ -108,6 +110,29 @@ public class MeasurePresenter implements Presenter<MeasureView> {
         new android.os.Handler().postDelayed(
                 () -> connect_sensor(context),
                 1000);
+        subscription().add(
+                sessionRepository.get(sessionId)
+                        .map(session -> Session.setEndTime(session, Instant.now()))
+                        .flatMap(sessionRepository::save)
+                        .subscribeOn(threadingModule.getIOScheduler())
+                        .observeOn(threadingModule.getMainScheduler())
+                        .subscribe(new Observer<Session>() {
+                                       @Override
+                                       public void onCompleted() {
+                                           Log.i(TAG, "requestContent onCompleted");
+                                       }
+
+                                       @Override
+                                       public void onError(Throwable e) {
+                                           e.printStackTrace();
+                                       }
+
+                                       @Override
+                                       public void onNext(Session session) {
+                                           Log.i(TAG, "id " + session.id);
+                                       }
+                                   }
+                        ));
     }
 
     private void connect_sensor(Context context) {

@@ -24,7 +24,7 @@ public class Session {
         );
     }
 
-    public Session setEndTime(Session session, Instant endTime) {
+    public static Session setEndTime(Session session, Instant endTime) {
         return new Session(
                 session.id,
                 session.name,
