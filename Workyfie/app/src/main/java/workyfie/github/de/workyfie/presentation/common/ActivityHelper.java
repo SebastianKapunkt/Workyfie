@@ -1,4 +1,4 @@
-package sebastiankapuntk.github.de.escalation.presentation.common;
+package workyfie.github.de.workyfie.presentation.common;
 
 import android.app.FragmentTransaction;
 import android.content.Context;

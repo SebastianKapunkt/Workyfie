@@ -2,29 +2,52 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:layout_marginBottom="8dp"
+    android:layout_marginLeft="8dp"
+    android:layout_marginRight="8dp"
+    android:layout_marginTop="8dp"
+    android:background="@drawable/rectangle"
+    android:elevation="4dp"
     android:orientation="vertical">
-
-    <TextView
-        android:id="@+id/date_field"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="placeholder" />
 
     <TextView
         android:id="@+id/name_field"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="placeholder" />
+        android:textSize="25sp"
+        android:layout_margin="20dp"
+        android:text="Name" />
 
-    <TextView
-        android:id="@+id/start_time_field"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="placeholder" />
 
-    <TextView
-        android:id="@+id/end_time_field"
+    <TableLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="placeholder" />
+        android:layout_marginBottom="5dp"
+        android:layout_height="wrap_content">
+
+        <TableRow>
+
+            <TextView
+                android:id="@+id/date_key"
+                style="@style/history_text_field.weight_one"
+                android:text="@string/date" />
+
+            <TextView
+                android:id="@+id/date_field"
+                style="@style/history_text_field.weight_two"
+                android:text="DD MM YYYY" />
+        </TableRow>
+
+        <TableRow>
+
+            <TextView
+                android:id="@+id/duration_key"
+                style="@style/history_text_field.weight_one"
+                android:text="@string/duration" />
+
+            <TextView
+                android:id="@+id/duration_field"
+                style="@style/history_text_field.weight_two"
+                android:text="hh mm ss" />
+        </TableRow>
+    </TableLayout>
 </LinearLayout>

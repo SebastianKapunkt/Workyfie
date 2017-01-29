@@ -6,6 +6,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import org.threeten.bp.Duration;
+import org.threeten.bp.LocalDateTime;
+import org.threeten.bp.ZoneId;
 import org.threeten.bp.ZoneOffset;
 import org.threeten.bp.format.DateTimeFormatter;
 import org.threeten.bp.format.FormatStyle;
@@ -35,16 +38,20 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT).withLocale(Locale.UK).withZone(ZoneOffset.UTC);
-
-        holder.id.setText(String.format("id: %s", items.get(position).id));
-        holder.name.setText(String.format("name: %s", items.get(position).name));
-        if (items.get(position).startTime != null) {
-            holder.startTime.setText(String.format("startTime: %s", formatter.format(items.get(position).startTime)));
-        }
-        if (items.get(position).endTime != null) {
-            holder.endTime.setText(String.format("endTime: %s", formatter.format(items.get(position).endTime)));
-        }
+        holder.name.setText(String.format("%s", items.get(position).name));
+        LocalDateTime startDateTime = LocalDateTime.ofInstant(items.get(position).startTime, ZoneId.systemDefault());
+        holder.date.setText(String.format(
+                "%s %s %s",
+                startDateTime.getDayOfMonth(),
+                startDateTime.getMonth(),
+                startDateTime.getYear())
+        );
+        holder.duration.setText(String.format(
+                "%s h %s min %s sek",
+                Duration.between(items.get(position).startTime, items.get(position).endTime).toHours(),
+                Duration.between(items.get(position).startTime, items.get(position).endTime).toMinutes(),
+                Duration.between(items.get(position).startTime, items.get(position).endTime).toMillis() / 1000)
+        );
         holder.itemView.setOnClickListener(v -> onClickHistoryItem.onNext(items.get(position).id));
     }
 
@@ -58,17 +65,15 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        public TextView id;
         public TextView name;
-        public TextView startTime;
-        public TextView endTime;
+        public TextView date;
+        public TextView duration;
 
         public ViewHolder(View v) {
             super(v);
-            id = (TextView) v.findViewById(R.id.date_field);
             name = (TextView) v.findViewById(R.id.name_field);
-            startTime = (TextView) v.findViewById(R.id.start_time_field);
-            endTime = (TextView) v.findViewById(R.id.end_time_field);
+            date = (TextView) v.findViewById(R.id.date_field);
+            duration = (TextView) v.findViewById(R.id.duration_field);
         }
     }
 }
