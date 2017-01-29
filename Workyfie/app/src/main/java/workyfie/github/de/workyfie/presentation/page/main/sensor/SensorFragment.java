@@ -2,6 +2,7 @@ package workyfie.github.de.workyfie.presentation.page.main.sensor;
 
 import android.Manifest;
 import android.app.AlertDialog;
+import android.app.Fragment;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothManager;
 import android.content.Context;
@@ -40,7 +41,7 @@ import workyfie.github.de.workyfie.application.bth.IBTHReceiverFoundCallback;
 
 import static android.Manifest.permission.ACCESS_COARSE_LOCATION;
 
-public class SensorFragment extends android.support.v4.app.Fragment
+public class SensorFragment extends Fragment
         implements SensorView,
         View.OnClickListener{
     public static final String TAG = SensorFragment.class.getSimpleName();

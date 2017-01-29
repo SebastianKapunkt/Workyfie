@@ -1,9 +1,9 @@
 package workyfie.github.de.workyfie.presentation.page.main.historie.detail;
 
+import android.app.Fragment;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -11,7 +11,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.jjoe64.graphview.GraphView;
@@ -20,12 +19,8 @@ import com.jjoe64.graphview.series.LineGraphSeries;
 import org.threeten.bp.Duration;
 import org.threeten.bp.LocalDateTime;
 import org.threeten.bp.ZoneId;
-import org.threeten.bp.ZoneOffset;
-import org.threeten.bp.format.DateTimeFormatter;
-import org.threeten.bp.format.FormatStyle;
 
 import java.util.List;
-import java.util.Locale;
 
 import rx.subjects.PublishSubject;
 import workyfie.github.de.workyfie.App;

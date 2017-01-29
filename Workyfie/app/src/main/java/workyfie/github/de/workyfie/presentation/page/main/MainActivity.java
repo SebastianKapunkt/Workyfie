@@ -19,6 +19,7 @@ import workyfie.github.de.workyfie.application.bitalino.state.BitalinoStateConne
 import workyfie.github.de.workyfie.application.bitalino.state.BitalinoStateConnecting;
 import workyfie.github.de.workyfie.application.bitalino.state.BitalinoStateDisconnected;
 import workyfie.github.de.workyfie.application.bitalino.state.IBitalinoState;
+import workyfie.github.de.workyfie.presentation.common.FragmentUtils;
 import workyfie.github.de.workyfie.presentation.page.main.historie.HistoryFragment;
 import workyfie.github.de.workyfie.presentation.page.main.information.InformationFragment;
 import workyfie.github.de.workyfie.presentation.page.main.measure.MeasureFragment;
@@ -48,7 +49,7 @@ public class MainActivity extends AppCompatActivity implements SidebarFragment.C
         setUpToolbar();
 
         if (savedInstanceState == null) {
-            getSupportFragmentManager().beginTransaction()
+            getFragmentManager().beginTransaction()
                     .add(R.id.container_sidebar, SidebarFragment.newInstance(), SidebarFragment.TAG)
                     .add(R.id.container_main, MeasureFragment.newInstance(), MeasureFragment.TAG)
                     .commit();
@@ -102,27 +103,35 @@ public class MainActivity extends AppCompatActivity implements SidebarFragment.C
     public void onSidebarItemClicked(SidebarItem sidebarItem) {
         switch (sidebarItem) {
             case HISTORY:
-                getSupportFragmentManager().beginTransaction()
+                FragmentUtils.defaultAnimation(
+                        getFragmentManager()
+                                .beginTransaction())
                         .replace(R.id.container_main, HistoryFragment.newInstance(), HistoryFragment.TAG)
-                        .addToBackStack(TAG)
+                        .addToBackStack(HistoryFragment.TAG)
                         .commit();
                 break;
             case INFORMATION:
-                getSupportFragmentManager().beginTransaction()
+                FragmentUtils.defaultAnimation(
+                        getFragmentManager()
+                                .beginTransaction())
                         .replace(R.id.container_main, InformationFragment.newInstance(), InformationFragment.TAG)
-                        .addToBackStack(TAG)
+                        .addToBackStack(InformationFragment.TAG)
                         .commit();
                 break;
             case SENSOR:
-                getSupportFragmentManager().beginTransaction()
+                FragmentUtils.defaultAnimation(
+                        getFragmentManager()
+                                .beginTransaction())
                         .replace(R.id.container_main, SensorFragment.newInstance(), SensorFragment.TAG)
-                        .addToBackStack(TAG)
+                        .addToBackStack(SensorFragment.TAG)
                         .commit();
                 break;
             case MEASURE:
-                getSupportFragmentManager().beginTransaction()
+                FragmentUtils.defaultAnimation(
+                        getFragmentManager()
+                                .beginTransaction())
                         .replace(R.id.container_main, MeasureFragment.newInstance(), MeasureFragment.TAG)
-                        .addToBackStack(TAG)
+                        .addToBackStack(MeasureFragment.TAG)
                         .commit();
                 break;
 
@@ -138,7 +147,7 @@ public class MainActivity extends AppCompatActivity implements SidebarFragment.C
             image.setImageDrawable(getDrawable(R.drawable.bluetooth_transfer));
         } else if (state instanceof BitalinoStateDisconnected) {
             image.setImageDrawable(getDrawable(R.drawable.bluetooth_off));
-        } else if (state instanceof BitalinoStateConnecting){
+        } else if (state instanceof BitalinoStateConnecting) {
             image.setImageDrawable(getDrawable(R.drawable.bluetooth_connect));
         }
     }

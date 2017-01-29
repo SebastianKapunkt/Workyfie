@@ -1,8 +1,8 @@
 package workyfie.github.de.workyfie.presentation.page.main.historie;
 
+import android.app.Fragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -15,8 +15,9 @@ import java.util.List;
 import workyfie.github.de.workyfie.App;
 import workyfie.github.de.workyfie.R;
 import workyfie.github.de.workyfie.data.view.models.Session;
+import workyfie.github.de.workyfie.presentation.common.FragmentUtils;
 import workyfie.github.de.workyfie.presentation.page.main.historie.detail.HistoryDetailFragment;
-import workyfie.github.de.workyfie.presentation.page.main.measure.MeasureFragment;
+import workyfie.github.de.workyfie.presentation.page.main.information.InformationFragment;
 
 public class HistoryFragment extends Fragment
         implements HistoryView {
@@ -82,9 +83,11 @@ public class HistoryFragment extends Fragment
 
     @Override
     public void openHistoryItem(String id) {
-        getFragmentManager().beginTransaction()
+        FragmentUtils.defaultAnimation(
+                getFragmentManager()
+                        .beginTransaction())
                 .replace(R.id.container_main, HistoryDetailFragment.newInstance(id), HistoryDetailFragment.TAG)
-                .addToBackStack(TAG)
+                .addToBackStack(HistoryDetailFragment.TAG)
                 .commit();
     }
 }

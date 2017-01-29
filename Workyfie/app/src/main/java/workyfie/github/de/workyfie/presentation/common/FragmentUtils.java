@@ -5,8 +5,8 @@ import android.content.Context;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 
-public class ActivityHelper {
-    public static final String TAG = ActivityHelper.class.getSimpleName();
+public class FragmentUtils {
+    public static final String TAG = FragmentUtils.class.getSimpleName();
 
     public static FragmentTransaction defaultAnimation(FragmentTransaction transaction) {
         return transaction.setCustomAnimations(android.R.animator.fade_in, android.R.animator.fade_out, android.R.animator.fade_in, android.R.animator.fade_out);

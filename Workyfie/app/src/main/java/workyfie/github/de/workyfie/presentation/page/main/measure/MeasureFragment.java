@@ -1,11 +1,9 @@
 package workyfie.github.de.workyfie.presentation.page.main.measure;
 
 import android.app.AlertDialog;
-import android.graphics.Color;
-import android.graphics.Paint;
+import android.app.Fragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -31,13 +29,11 @@ import workyfie.github.de.workyfie.application.bitalino.state.BitalinoStateDisco
 import workyfie.github.de.workyfie.application.bitalino.state.BitalinoStateRecording;
 import workyfie.github.de.workyfie.application.bitalino.state.IBitalinoState;
 import workyfie.github.de.workyfie.presentation.page.main.MainActivity;
-import workyfie.github.de.workyfie.presentation.page.main.sidebar.SidebarFragment;
 import workyfie.github.de.workyfie.presentation.page.main.sidebar.SidebarItem;
 
 public class MeasureFragment extends Fragment implements MeasureView, View.OnClickListener {
 
     public static final String TAG = MeasureFragment.class.getSimpleName();
-
 
 
     private MeasurePresenter presenter;
@@ -66,6 +62,7 @@ public class MeasureFragment extends Fragment implements MeasureView, View.OnCli
         fragment.setArguments(args);
         return fragment;
     }
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -170,7 +167,7 @@ public class MeasureFragment extends Fragment implements MeasureView, View.OnCli
                 presenter.stop_reording(App.getApplication());
                 break;
             case R.id.change_to_sensor:
-                ((MainActivity)getActivity()).onSidebarItemClicked(SidebarItem.SENSOR);
+                ((MainActivity) getActivity()).onSidebarItemClicked(SidebarItem.SENSOR);
                 break;
         }
     }
@@ -183,15 +180,16 @@ public class MeasureFragment extends Fragment implements MeasureView, View.OnCli
             showIsDisconnected();
         } else if (state instanceof BitalinoStateRecording) {
             showIsRecording();
-        } else if (state instanceof BitalinoStateConnecting){
+        } else if (state instanceof BitalinoStateConnecting) {
             showIsConnecting();
         }
     }
+
     @Override
     public void addGraphData(DataPoint dataPoint) {
-        if(dataPoint.getX() <= MAX_X){
+        if (dataPoint.getX() <= MAX_X) {
             series.appendData(dataPoint, false, 100);
-        }else{
+        } else {
             series.appendData(dataPoint, true, 100);
         }
 
@@ -218,7 +216,8 @@ public class MeasureFragment extends Fragment implements MeasureView, View.OnCli
 
         startRecord.setEnabled(true);
         startRecord.setVisibility(View.VISIBLE);
-        stopRecord.setVisibility(View.INVISIBLE);}
+        stopRecord.setVisibility(View.INVISIBLE);
+    }
 
     private void showIsDisconnected() {
         sessionTable.setVisibility(View.GONE);
@@ -229,7 +228,7 @@ public class MeasureFragment extends Fragment implements MeasureView, View.OnCli
         stopRecord.setVisibility(View.INVISIBLE);
     }
 
-    private void showIsConnecting(){
+    private void showIsConnecting() {
         sessionTable.setVisibility(View.GONE);
         infoNoConnectContainer.setVisibility(View.GONE);
 
