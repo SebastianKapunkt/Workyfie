@@ -1,14 +1,9 @@
 package workyfie.github.de.workyfie.data.repos.session;
 
-import android.util.Log;
-
-import org.threeten.bp.Instant;
-
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import rx.Observable;
-import rx.Subscriber;
 import workyfie.github.de.workyfie.data.view.models.Session;
 
 public class SessionRepository {
@@ -40,6 +35,10 @@ public class SessionRepository {
                 .switchIfEmpty(
                         persistance.list()
                                 .flatMap(cache::save)
-                );
+                )
+                .map(sessions -> {
+                    Collections.reverse(sessions);
+                    return sessions;
+                });
     }
 }
