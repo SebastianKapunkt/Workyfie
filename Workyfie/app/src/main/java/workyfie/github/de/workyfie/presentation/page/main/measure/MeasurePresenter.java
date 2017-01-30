@@ -94,6 +94,7 @@ public class MeasurePresenter implements Presenter<MeasureView> {
                                            sessionId = session.id;
                                            bitalinoReceiveHandler.setNewSession(session.id);
                                            view.setGraphData(new DataPoint[]{});
+                                           view.startChronometer(session.startTime);
 
                                            if (!bitalino.start_recording(new int[]{bitalinoConfig.CHANNEL}, bitalinoConfig.SAMPLE_RATE)) {
                                                view.errMsg("Fehler beim Starten der Aufnahme!");
@@ -130,6 +131,7 @@ public class MeasurePresenter implements Presenter<MeasureView> {
                                        @Override
                                        public void onNext(Session session) {
                                            Log.i(TAG, "id " + session.id);
+                                           view.stopChronometer();
                                        }
                                    }
                         ));

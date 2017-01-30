@@ -89,7 +89,7 @@ public class SensorFragment extends Fragment
         super.onCreate(savedInstanceState);
 
         ArrayList<BthDevice> deviceData = new ArrayList<>();
-        adapter = new ArrayAdapter<>(this.getContext(), android.R.layout.simple_list_item_1, android.R.id.text1, deviceData);
+        adapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_1, android.R.id.text1, deviceData);
 
         bitalinoReceiveHandler = App.getComponent().getBitalinoReceiveHandler();
 
@@ -130,7 +130,7 @@ public class SensorFragment extends Fragment
         deviceListView.setAdapter(adapter);
 
         deviceListView.setOnItemClickListener((adapterView, view, i, l) -> {
-            presenter.connect_sensor(getContext(),
+            presenter.connect_sensor(getActivity(),
                     ((BthDevice)deviceListView.getItemAtPosition(i)).adresse,
                     ((BthDevice)deviceListView.getItemAtPosition(i)).type,
                     bteSerachCallback);
@@ -218,7 +218,7 @@ public class SensorFragment extends Fragment
 
     @Override
     public void errMsg(String msg) {
-        alertDialog = new AlertDialog.Builder(getContext())
+        alertDialog = new AlertDialog.Builder(getActivity())
                 .setTitle("Error")
                 .setMessage(msg)
                 .setNeutralButton("Ok", (dialogInterface, i) -> alertDialog.dismiss())

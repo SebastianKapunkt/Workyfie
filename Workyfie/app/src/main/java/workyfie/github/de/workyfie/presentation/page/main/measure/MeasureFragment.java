@@ -3,6 +3,7 @@ package workyfie.github.de.workyfie.presentation.page.main.measure;
 import android.app.AlertDialog;
 import android.app.Fragment;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.support.annotation.Nullable;
 import android.text.Html;
 import android.util.Log;
@@ -10,12 +11,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.Chronometer;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.series.DataPoint;
 import com.jjoe64.graphview.series.LineGraphSeries;
+
+import org.threeten.bp.Instant;
 
 import workyfie.github.de.workyfie.App;
 import workyfie.github.de.workyfie.R;
@@ -48,6 +52,7 @@ public class MeasureFragment extends Fragment implements MeasureView, View.OnCli
     private Button stopRecord;
     private Button changeToSensor;
     private TextView infoNoConnect;
+    private Chronometer chronometer;
 
     private AlertDialog alertDialog;
 
@@ -88,6 +93,7 @@ public class MeasureFragment extends Fragment implements MeasureView, View.OnCli
         changeToSensor = (Button) rootView.findViewById(R.id.change_to_sensor);
         graphView = (GraphView) rootView.findViewById(R.id.graph);
         infoNoConnect = (TextView) rootView.findViewById(R.id.textNoConnected);
+        chronometer = (Chronometer) rootView.findViewById(R.id.chrono);
 
         series = new LineGraphSeries<>();
         series.setColor(getResources().getColor(R.color.colorAccentDark));
@@ -201,12 +207,23 @@ public class MeasureFragment extends Fragment implements MeasureView, View.OnCli
 
     @Override
     public void errMsg(String msg) {
-        alertDialog = new AlertDialog.Builder(getContext())
+        alertDialog = new AlertDialog.Builder(getActivity())
                 .setTitle("Error")
                 .setMessage(msg)
                 .setNeutralButton("Ok", (dialogInterface, i) -> alertDialog.dismiss())
                 .create();
         alertDialog.show();
+    }
+
+    @Override
+    public void startChronometer(Instant startTime) {
+        chronometer.setBase(SystemClock.elapsedRealtime());
+        chronometer.start();
+    }
+
+    @Override
+    public void stopChronometer() {
+        chronometer.stop();
     }
 
     private void showIsConnected() {
