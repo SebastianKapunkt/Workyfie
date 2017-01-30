@@ -1,4 +1,4 @@
-package workyfie.github.de.workyfie.data.persistance.models.converter;
+package workyfie.github.de.workyfie.data.persistence.models.converter;
 
 import org.threeten.bp.Instant;
 
@@ -6,12 +6,12 @@ import java.util.List;
 
 import workyfie.github.de.workyfie.data.converter.Converter;
 import workyfie.github.de.workyfie.data.converter.ConverterUtils;
-import workyfie.github.de.workyfie.data.persistance.models.PersistanceSession;
+import workyfie.github.de.workyfie.data.persistence.models.PersistenceSession;
 import workyfie.github.de.workyfie.data.view.models.Session;
 
-public class SessionPersistanceViewConverter implements Converter<PersistanceSession, Session> {
+public class SessionPersistenceViewConverter implements Converter<PersistenceSession, Session> {
     @Override
-    public Session from(PersistanceSession value) {
+    public Session from(PersistenceSession value) {
         return new Session(
                 String.valueOf(value.getId()),
                 value.getName(),
@@ -21,8 +21,8 @@ public class SessionPersistanceViewConverter implements Converter<PersistanceSes
     }
 
     @Override
-    public PersistanceSession to(Session value) {
-        return new PersistanceSession(
+    public PersistenceSession to(Session value) {
+        return new PersistenceSession(
                 Integer.valueOf(value.id),
                 value.name,
                 value.startTime == null ? "" : value.startTime.toString(),
@@ -30,11 +30,11 @@ public class SessionPersistanceViewConverter implements Converter<PersistanceSes
         );
     }
 
-    public List<Session> from(List<PersistanceSession> values) {
+    public List<Session> from(List<PersistenceSession> values) {
         return ConverterUtils.from(values, this);
     }
 
-    public List<PersistanceSession> to(List<Session> values) {
+    public List<PersistenceSession> to(List<Session> values) {
         return ConverterUtils.to(values, this);
     }
 }

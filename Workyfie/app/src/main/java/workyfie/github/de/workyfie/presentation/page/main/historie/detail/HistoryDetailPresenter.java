@@ -1,21 +1,12 @@
 package workyfie.github.de.workyfie.presentation.page.main.historie.detail;
 
 import android.util.Log;
-import android.widget.ProgressBar;
 
-import com.jjoe64.graphview.series.DataPoint;
-
-import org.threeten.bp.Instant;
-
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 import rx.Observable;
 import rx.Observer;
-import rx.functions.Func1;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
 import workyfie.github.de.workyfie.application.modules.ThreadingModule;

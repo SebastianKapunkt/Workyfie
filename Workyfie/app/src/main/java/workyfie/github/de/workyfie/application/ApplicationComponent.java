@@ -42,7 +42,7 @@ public class ApplicationComponent {
     }
 
     public BitalinoReceiveHandler getBitalinoReceiveHandler() {
-        if(bitalinoReceiveHandler == null){
+        if (bitalinoReceiveHandler == null) {
             bitalinoReceiveHandler = dataModule.provideBitalinoReceiveDataHandler();
         }
         return bitalinoReceiveHandler;

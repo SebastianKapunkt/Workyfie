@@ -9,7 +9,7 @@ import android.view.ViewGroup;
 
 import workyfie.github.de.workyfie.R;
 
-public class InformationFragment extends Fragment implements InformationView, View.OnClickListener {
+public class InformationFragment extends Fragment implements InformationView {
     public static final String TAG = InformationFragment.class.getSimpleName();
 
     private InformationPresenter presenter;
@@ -21,6 +21,7 @@ public class InformationFragment extends Fragment implements InformationView, Vi
         fragment.setArguments(args);
         return fragment;
     }
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -34,35 +35,5 @@ public class InformationFragment extends Fragment implements InformationView, Vi
         View rootView = inflater.inflate(R.layout.information_fragment, container, false);
 
         return rootView;
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-    }
-
-    @Override
-    public void onClick(View view) {
-
     }
 }

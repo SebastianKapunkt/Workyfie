@@ -9,12 +9,8 @@ import android.widget.TextView;
 import org.threeten.bp.Duration;
 import org.threeten.bp.LocalDateTime;
 import org.threeten.bp.ZoneId;
-import org.threeten.bp.ZoneOffset;
-import org.threeten.bp.format.DateTimeFormatter;
-import org.threeten.bp.format.FormatStyle;
 
 import java.util.List;
-import java.util.Locale;
 
 import rx.Observable;
 import rx.subjects.PublishSubject;

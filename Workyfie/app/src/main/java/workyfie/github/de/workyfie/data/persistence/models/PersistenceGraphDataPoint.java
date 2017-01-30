@@ -1,18 +1,17 @@
-package workyfie.github.de.workyfie.data.persistance.models;
+package workyfie.github.de.workyfie.data.persistence.models;
 
 import io.realm.RealmObject;
-import io.realm.annotations.PrimaryKey;
 
-public class PersistanceGraphDataPoint extends RealmObject {
+public class PersistenceGraphDataPoint extends RealmObject {
     private String id;
     private String sessionId;
     private Double x;
     private Double y;
 
-    public PersistanceGraphDataPoint() {
+    public PersistenceGraphDataPoint() {
     }
 
-    public PersistanceGraphDataPoint(String id, String sessionId, Double x, Double y) {
+    public PersistenceGraphDataPoint(String id, String sessionId, Double x, Double y) {
         this.id = id;
         this.sessionId = sessionId;
         this.x = x;

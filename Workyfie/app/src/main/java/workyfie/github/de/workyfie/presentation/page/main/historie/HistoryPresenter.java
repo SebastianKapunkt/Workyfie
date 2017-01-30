@@ -2,14 +2,10 @@ package workyfie.github.de.workyfie.presentation.page.main.historie;
 
 import android.util.Log;
 
-import org.threeten.bp.Instant;
-
-import java.util.ArrayList;
 import java.util.List;
 
 import rx.Observable;
 import rx.Observer;
-import rx.Subscriber;
 import rx.subscriptions.CompositeSubscription;
 import workyfie.github.de.workyfie.application.modules.ThreadingModule;
 import workyfie.github.de.workyfie.data.repos.session.SessionRepository;

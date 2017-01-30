@@ -4,26 +4,26 @@ import java.util.List;
 
 import io.realm.Realm;
 import rx.Observable;
-import workyfie.github.de.workyfie.data.persistance.models.PersistanceSession;
-import workyfie.github.de.workyfie.data.persistance.models.converter.SessionPersistanceViewConverter;
+import workyfie.github.de.workyfie.data.persistence.models.PersistenceSession;
+import workyfie.github.de.workyfie.data.persistence.models.converter.SessionPersistenceViewConverter;
 import workyfie.github.de.workyfie.data.view.models.Session;
 
-public class SessionPersistanceDataSource {
+public class SessionPersistenceDataSource {
 
-    private SessionPersistanceViewConverter converter;
+    private SessionPersistenceViewConverter converter;
 
-    public SessionPersistanceDataSource() {
-        converter = new SessionPersistanceViewConverter();
+    public SessionPersistenceDataSource() {
+        converter = new SessionPersistenceViewConverter();
     }
 
     public Observable<Session> get(String id) {
         return Observable.create(subscriber -> {
             Realm realm = Realm.getDefaultInstance();
-            PersistanceSession persistance = realm.where(PersistanceSession.class)
+            PersistenceSession persistence = realm.where(PersistenceSession.class)
                     .equalTo("id", Long.valueOf(id))
                     .findFirst();
-            if (persistance != null) {
-                subscriber.onNext(converter.from(persistance));
+            if (persistence != null) {
+                subscriber.onNext(converter.from(persistence));
             }
             subscriber.onCompleted();
         });
@@ -55,10 +55,10 @@ public class SessionPersistanceDataSource {
     }
 
     public String getNextKey(Realm realm) {
-        if (realm.where(PersistanceSession.class).max("id") == null) {
+        if (realm.where(PersistenceSession.class).max("id") == null) {
             return "0";
         }
-        return String.valueOf(realm.where(PersistanceSession.class).max("id").intValue() + 1);
+        return String.valueOf(realm.where(PersistenceSession.class).max("id").intValue() + 1);
     }
 
     public Observable<List<Session>> list() {
@@ -66,7 +66,7 @@ public class SessionPersistanceDataSource {
             Realm realm = Realm.getDefaultInstance();
             List<Session> sessionList = converter.from(
                     realm.copyFromRealm(
-                            realm.where(PersistanceSession.class)
+                            realm.where(PersistenceSession.class)
                                     .findAll()
                     )
             );

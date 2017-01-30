@@ -5,16 +5,16 @@ import java.util.List;
 
 import io.realm.Realm;
 import rx.Observable;
-import workyfie.github.de.workyfie.data.persistance.models.PersistanceGraphDataPoint;
-import workyfie.github.de.workyfie.data.persistance.models.converter.GraphDataPointPersistanceViewConverter;
+import workyfie.github.de.workyfie.data.persistence.models.PersistenceGraphDataPoint;
+import workyfie.github.de.workyfie.data.persistence.models.converter.GraphDataPointPersistenceViewConverter;
 import workyfie.github.de.workyfie.data.view.models.GraphDataPoint;
 
-public class GraphDataPointPersistanceDataSource {
+public class GraphDataPointPersistenceDataSource {
 
-    private GraphDataPointPersistanceViewConverter converter;
+    private GraphDataPointPersistenceViewConverter converter;
 
-    public GraphDataPointPersistanceDataSource() {
-        converter = new GraphDataPointPersistanceViewConverter();
+    public GraphDataPointPersistenceDataSource() {
+        converter = new GraphDataPointPersistenceViewConverter();
     }
 
     public Observable<List<GraphDataPoint>> getBySessionId(String sessionId) {
@@ -25,7 +25,7 @@ public class GraphDataPointPersistanceDataSource {
 
             points = converter.from(
                     realm.copyFromRealm(
-                            realm.where(PersistanceGraphDataPoint.class)
+                            realm.where(PersistenceGraphDataPoint.class)
                                     .equalTo("sessionId", sessionId)
                                     .findAll()
                     )
@@ -64,9 +64,9 @@ public class GraphDataPointPersistanceDataSource {
     }
 
     public String getNextKey(Realm realm) {
-        if (realm.where(PersistanceGraphDataPoint.class).max("id") == null) {
+        if (realm.where(PersistenceGraphDataPoint.class).max("id") == null) {
             return "0";
         }
-        return String.valueOf(realm.where(PersistanceGraphDataPoint.class).max("id").intValue() + 1);
+        return String.valueOf(realm.where(PersistenceGraphDataPoint.class).max("id").intValue() + 1);
     }
 }

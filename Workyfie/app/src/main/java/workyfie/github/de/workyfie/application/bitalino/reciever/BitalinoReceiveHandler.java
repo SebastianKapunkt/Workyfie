@@ -18,7 +18,6 @@ import workyfie.github.de.workyfie.data.repos.graphdatapoint.GraphDataPointRepos
 import workyfie.github.de.workyfie.data.repos.session.SessionRepository;
 import workyfie.github.de.workyfie.data.view.models.GraphDataPoint;
 
-import static org.threeten.bp.temporal.ChronoField.MILLI_OF_SECOND;
 import static workyfie.github.de.workyfie.presentation.page.main.sensor.SensorPresenter.TAG;
 
 public class BitalinoReceiveHandler implements IBitalinoOnReceiveCallback {
@@ -83,7 +82,6 @@ public class BitalinoReceiveHandler implements IBitalinoOnReceiveCallback {
         this.currentSessionId = sessionId;
 
         //clear old Data
-        graphDataPointRepository.getFromTemp();
         oldInstant = null;
         pointList = new ArrayList<>();
     }

@@ -1,19 +1,19 @@
-package workyfie.github.de.workyfie.data.persistance.models;
+package workyfie.github.de.workyfie.data.persistence.models;
 
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
-public class PersistanceSession extends RealmObject {
+public class PersistenceSession extends RealmObject {
     @PrimaryKey
     private int id;
     private String name;
     private String startTime;
     private String endTime;
 
-    public PersistanceSession() {
+    public PersistenceSession() {
     }
 
-    public PersistanceSession(int id, String name, String startTime, String endTime) {
+    public PersistenceSession(int id, String name, String startTime, String endTime) {
         this.id = id;
         this.name = name;
         this.startTime = startTime;

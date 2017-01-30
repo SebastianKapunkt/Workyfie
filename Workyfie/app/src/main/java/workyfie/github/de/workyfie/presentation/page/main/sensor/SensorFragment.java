@@ -38,13 +38,12 @@ import workyfie.github.de.workyfie.application.bitalino.state.BitalinoStateRecor
 import workyfie.github.de.workyfie.application.bitalino.state.IBitalinoState;
 import workyfie.github.de.workyfie.application.bth.BthDevice;
 import workyfie.github.de.workyfie.application.bth.IBTHReceiverFoundCallback;
-import workyfie.github.de.workyfie.presentation.page.main.sidebar.SidebarItem;
 
 import static android.Manifest.permission.ACCESS_COARSE_LOCATION;
 
 public class SensorFragment extends Fragment
         implements SensorView,
-        View.OnClickListener{
+        View.OnClickListener {
     public static final String TAG = SensorFragment.class.getSimpleName();
 
     private final int PERMISSION_REQUEST_COARSE_LOCATION = 2;
@@ -89,7 +88,9 @@ public class SensorFragment extends Fragment
         super.onCreate(savedInstanceState);
 
         ArrayList<BthDevice> deviceData = new ArrayList<>();
+        
         adapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_1, android.R.id.text1, deviceData);
+
 
         bitalinoReceiveHandler = App.getComponent().getBitalinoReceiveHandler();
 
@@ -131,8 +132,8 @@ public class SensorFragment extends Fragment
 
         deviceListView.setOnItemClickListener((adapterView, view, i, l) -> {
             presenter.connect_sensor(getActivity(),
-                    ((BthDevice)deviceListView.getItemAtPosition(i)).adresse,
-                    ((BthDevice)deviceListView.getItemAtPosition(i)).type,
+                    ((BthDevice) deviceListView.getItemAtPosition(i)).adresse,
+                    ((BthDevice) deviceListView.getItemAtPosition(i)).type,
                     bteSerachCallback);
         });
 
@@ -203,14 +204,14 @@ public class SensorFragment extends Fragment
             showIsDisconnected();
         } else if (state instanceof BitalinoStateRecording) {
             showIsRecording();
-        } else if (state instanceof BitalinoStateConnecting){
+        } else if (state instanceof BitalinoStateConnecting) {
             showIsConnecting();
         }
     }
 
     @Override
     public void drawIsScanning(boolean isScanning) {
-        if(isScanning)
+        if (isScanning)
             showIsScanningDevice();
         else
             showFinishScanningDevice();
@@ -229,10 +230,10 @@ public class SensorFragment extends Fragment
     @Override
     public void notifyDeviceDataChange() {
         adapter.notifyDataSetChanged();
-        if(adapter.getCount() > 0){
+        if (adapter.getCount() > 0) {
             emptyList.setVisibility(View.INVISIBLE);
             deviceListView.setVisibility(View.VISIBLE);
-        }else{
+        } else {
             emptyList.setVisibility(View.VISIBLE);
             deviceListView.setVisibility(View.INVISIBLE);
         }
@@ -269,7 +270,7 @@ public class SensorFragment extends Fragment
         connectedImage.setImageDrawable(getActivity().getDrawable(R.drawable.bluetooth_off));
     }
 
-    private void showIsConnecting(){
+    private void showIsConnecting() {
         inforamtionTable.setVisibility(View.GONE);
         disconnectSensor.setVisibility(View.INVISIBLE);
 
@@ -287,12 +288,12 @@ public class SensorFragment extends Fragment
         tryConnecting = true;
         new android.os.Handler().postDelayed(
                 () -> {
-                    if(!presenter.isSensorConnected() && tryConnecting){
+                    if (!presenter.isSensorConnected() && tryConnecting) {
                         try {
                             errMsg("Fehler beim Verbinden zum Sensor! Ist der Sensor eingeschaltet?");
-                        }catch (NullPointerException e){
+                        } catch (NullPointerException e) {
                             Log.i(TAG, e.toString());
-                        }finally {
+                        } finally {
                             tryConnecting = false;
                             showIsDisconnected();
                         }
@@ -313,23 +314,24 @@ public class SensorFragment extends Fragment
         statusSensor.setText("Zeichne Daten auf...");
 
         connectedStatus.setText("VERBUNDEN");
-        connectedImage.setImageResource(R.mipmap.connected_chains);
-
+        connectedStatus.setTextColor(getActivity().getResources().getColor(R.color.green));
+        connectedImage.setImageDrawable(getActivity().getDrawable(R.drawable.bluetooth_transfer));
     }
 
-    private void showIsScanningDevice(){
+    private void showIsScanningDevice() {
         scanSensor.setEnabled(false);
         loaderCycle.setVisibility(View.VISIBLE);
     }
-    private void showFinishScanningDevice(){
+
+    private void showFinishScanningDevice() {
         scanSensor.setEnabled(true);
         loaderCycle.setVisibility(View.INVISIBLE);
     }
 
-    private void permissionCheck(){
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
+    private void permissionCheck() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             //Android Marshmallow and above permission check
-            if(this.getActivity().checkSelfPermission(ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED){
+            if (this.getActivity().checkSelfPermission(ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                 final AlertDialog.Builder builder = new AlertDialog.Builder(this.getActivity());
                 builder.setTitle(getString(R.string.permission_check_dialog_title))
                         .setMessage(getString(R.string.permission_check_dialog_message))
@@ -338,9 +340,5 @@ public class SensorFragment extends Fragment
                 builder.show();
             }
         }
-    }
-
-    public interface Callback {
-        void setSidebarItem(SidebarItem item);
     }
 }

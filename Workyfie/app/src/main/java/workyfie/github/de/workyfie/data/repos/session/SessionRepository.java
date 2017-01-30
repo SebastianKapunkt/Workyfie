@@ -9,31 +9,31 @@ import workyfie.github.de.workyfie.data.view.models.Session;
 public class SessionRepository {
     public static final String TAG = SessionRepository.class.getSimpleName();
 
-    private SessionPersistanceDataSource persistance;
+    private SessionPersistenceDataSource persistence;
     private SessionCacheDataSource cache;
 
-    public SessionRepository(SessionPersistanceDataSource persistance, SessionCacheDataSource cache) {
-        this.persistance = persistance;
+    public SessionRepository(SessionPersistenceDataSource persistence, SessionCacheDataSource cache) {
+        this.persistence = persistence;
         this.cache = cache;
     }
 
     public Observable<Session> get(String id) {
         return cache.get(id)
                 .switchIfEmpty(
-                        persistance.get(id)
+                        persistence.get(id)
                                 .flatMap(cache::save)
                 );
     }
 
     public Observable<Session> save(Session session) {
-        return persistance.save(session)
+        return persistence.save(session)
                 .flatMap(cache::save);
     }
 
     public Observable<List<Session>> list() {
         return cache.list()
                 .switchIfEmpty(
-                        persistance.list()
+                        persistence.list()
                                 .flatMap(cache::save)
                 )
                 .map(sessions -> {

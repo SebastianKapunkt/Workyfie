@@ -17,7 +17,6 @@ import workyfie.github.de.workyfie.R;
 import workyfie.github.de.workyfie.data.view.models.Session;
 import workyfie.github.de.workyfie.presentation.common.FragmentUtils;
 import workyfie.github.de.workyfie.presentation.page.main.historie.detail.HistoryDetailFragment;
-import workyfie.github.de.workyfie.presentation.page.main.information.InformationFragment;
 
 public class HistoryFragment extends Fragment
         implements HistoryView {
