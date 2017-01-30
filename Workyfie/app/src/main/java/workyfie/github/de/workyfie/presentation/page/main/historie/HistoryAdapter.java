@@ -50,9 +50,9 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
             holder.duration.setText(String.format(
                     "%s h %s min %s sek",
                     Duration.between(items.get(position).startTime, items.get(position).endTime).toHours(),
-                    Duration.between(items.get(position).startTime, items.get(position).endTime).toMinutes(),
-                    Duration.between(items.get(position).startTime, items.get(position).endTime).toMillis() / 1000)
-            );
+                    Duration.between(items.get(position).startTime, items.get(position).endTime).toMinutes() % 60,
+                    (Duration.between(items.get(position).startTime, items.get(position).endTime).toMillis() / 1000) % 60
+            ));
         }
         holder.itemView.setOnClickListener(v -> onClickHistoryItem.onNext(items.get(position).id));
     }
