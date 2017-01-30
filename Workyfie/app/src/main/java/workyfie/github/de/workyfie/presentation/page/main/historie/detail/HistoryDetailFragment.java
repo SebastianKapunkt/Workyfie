@@ -104,6 +104,7 @@ public class HistoryDetailFragment extends Fragment implements HistoryDetailView
         graphView.getViewport().setMinX(0);
         graphView.getViewport().setMaxX(40);
         graphView.getViewport().setYAxisBoundsManual(true);
+        graphView.getViewport().setScalable(true);
         graphView.getViewport().setMaxY(1000);
         graphView.getViewport().setMinY(0);
         graphView.getViewport().setScrollable(true);
