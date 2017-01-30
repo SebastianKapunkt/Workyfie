@@ -154,7 +154,7 @@ public class HistoryDetailFragment extends Fragment implements HistoryDetailView
         }
 
         for (GraphDataPoint point : items.item2) {
-            series.appendData(point, true, 100);
+            series.appendData(point, true, 1000000);
         }
 
         graphView.requestFocus();
