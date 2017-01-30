@@ -172,8 +172,8 @@ public class HistoryDetailFragment extends Fragment implements HistoryDetailView
         durationView.setText(String.format(
                 "%s h %s min %s sek",
                 Duration.between(items.item1.startTime, items.item1.endTime).toHours(),
-                Duration.between(items.item1.startTime, items.item1.endTime).toMinutes(),
-                Duration.between(items.item1.startTime, items.item1.endTime).toMillis() / 1000)
+                Duration.between(items.item1.startTime, items.item1.endTime).toMinutes() % 60,
+                (Duration.between(items.item1.startTime, items.item1.endTime).toMillis() / 1000) % 60)
         );
         startTime.setText(String.format(
                 "%s:%s:%s",
