@@ -186,4 +186,8 @@ public class BitalinoReceiveHandler implements IBitalinoOnReceiveCallback {
         bitalinoProxy.setState(state);
         notifyAllStateChange(state);
     }
+
+    public String getSessionId() {
+        return currentSessionId;
+    }
 }

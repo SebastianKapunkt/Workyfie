@@ -105,7 +105,7 @@ public class MeasurePresenter implements Presenter<MeasureView> {
 
     }
 
-    public void stop_reording(Context context) {
+    public void stop_reording(String sessionId, Context context) {
         //BUG SENSOR beim Recording nicht gestoppt werden, daher erst disconnecten und dann wieder connecten.
         bitalino.disconnect_sensor();
         new android.os.Handler().postDelayed(

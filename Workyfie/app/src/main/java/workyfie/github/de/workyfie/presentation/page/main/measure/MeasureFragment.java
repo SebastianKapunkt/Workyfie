@@ -169,7 +169,7 @@ public class MeasureFragment extends Fragment implements MeasureView, View.OnCli
                 presenter.start_recording();
                 break;
             case R.id.stop_record:
-                presenter.stop_reording(App.getApplication());
+                presenter.stop_reording(bitalinoReceiveHandler.getSessionId(),App.getApplication());
                 break;
             case R.id.change_to_sensor:
                 ((MainActivity) getActivity()).onSidebarItemClicked(SidebarItem.SENSOR);
