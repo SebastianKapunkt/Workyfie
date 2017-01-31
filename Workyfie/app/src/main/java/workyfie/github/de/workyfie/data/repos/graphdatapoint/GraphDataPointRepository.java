@@ -32,4 +32,9 @@ public class GraphDataPointRepository {
         return persistence.save(graphDataPoint)
                 .flatMap(cache::save);
     }
+
+    public Observable<String> deleteBySessionId(String id) {
+        return persistence.deleteById(id)
+                .doOnNext(ignore -> cache.clearCache());
+    }
 }

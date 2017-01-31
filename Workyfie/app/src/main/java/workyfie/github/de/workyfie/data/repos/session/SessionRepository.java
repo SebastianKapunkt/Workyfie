@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.List;
 
 import rx.Observable;
+import workyfie.github.de.workyfie.App;
 import workyfie.github.de.workyfie.data.view.models.Session;
 
 public class SessionRepository {
@@ -18,11 +19,7 @@ public class SessionRepository {
     }
 
     public Observable<Session> get(String id) {
-        return cache.get(id)
-                .switchIfEmpty(
-                        persistence.get(id)
-                                .flatMap(cache::save)
-                );
+        return persistence.get(id);
     }
 
     public Observable<Session> save(Session session) {
@@ -41,6 +38,7 @@ public class SessionRepository {
 
     public Observable<String> delete(String id) {
         return persistence.delete(id)
+                .flatMap(string -> App.getComponent().getGraphDataPointRepository().deleteBySessionId(id))
                 .doOnNext(ignore -> cache.clearCache());
     }
 }

@@ -4,8 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.realm.Realm;
+import io.realm.RealmResults;
 import rx.Observable;
 import workyfie.github.de.workyfie.data.persistence.models.PersistenceGraphDataPoint;
+import workyfie.github.de.workyfie.data.persistence.models.PersistenceSession;
 import workyfie.github.de.workyfie.data.persistence.models.converter.GraphDataPointPersistenceViewConverter;
 import workyfie.github.de.workyfie.data.view.models.GraphDataPoint;
 
@@ -68,5 +70,19 @@ public class GraphDataPointPersistenceDataSource {
             return "0";
         }
         return String.valueOf(realm.where(PersistenceGraphDataPoint.class).max("id").intValue() + 1);
+    }
+
+    public Observable<String> deleteById(String id) {
+        return Observable.create(subscriber -> {
+            Realm realm = Realm.getDefaultInstance();
+
+            realm.beginTransaction();
+            RealmResults<PersistenceGraphDataPoint> rows = realm.where(PersistenceGraphDataPoint.class).equalTo("sessionId", id).findAll();
+            rows.deleteAllFromRealm();
+            realm.commitTransaction();
+
+            subscriber.onNext(id);
+            subscriber.onCompleted();
+        });
     }
 }
