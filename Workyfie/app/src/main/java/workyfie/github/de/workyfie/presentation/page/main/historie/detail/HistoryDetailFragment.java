@@ -161,7 +161,7 @@ public class HistoryDetailFragment extends Fragment implements HistoryDetailView
         graphView.requestFocus();
 
         LocalDateTime startDateTime = LocalDateTime.ofInstant(items.item1.startTime, ZoneId.systemDefault());
-        LocalDateTime endDateTime = LocalDateTime.ofInstant(items.item1.endTime, ZoneId.systemDefault());
+
 
         name.setText(String.format("%s", items.item1.name));
         dateView.setText(String.format(
@@ -170,26 +170,30 @@ public class HistoryDetailFragment extends Fragment implements HistoryDetailView
                 startDateTime.getMonth(),
                 startDateTime.getYear())
         );
-        durationView.setText(String.format(
-                "%s h %s min %s sek",
-                Duration.between(items.item1.startTime, items.item1.endTime).toHours(),
-                Duration.between(items.item1.startTime, items.item1.endTime).toMinutes() % 60,
-                (Duration.between(items.item1.startTime, items.item1.endTime).toMillis() / 1000) % 60)
-        );
+
         startTime.setText(String.format(
                 "%s:%s:%s",
                 startDateTime.getHour(),
                 startDateTime.getMinute(),
                 startDateTime.getSecond()
         ));
+
+        name.addTextChangedListener(watcher);
+        presenter.setTextChangeObserver(onClickNameField);
+
+        LocalDateTime endDateTime = LocalDateTime.ofInstant(items.item1.endTime, ZoneId.systemDefault());
         endTime.setText(String.format(
                 "%s:%s:%s",
                 endDateTime.getHour(),
                 endDateTime.getMinute(),
                 endDateTime.getSecond()
         ));
-        name.addTextChangedListener(watcher);
-        presenter.setTextChangeObserver(onClickNameField);
+        durationView.setText(String.format(
+                "%s h %s min %s sek",
+                Duration.between(items.item1.startTime, items.item1.endTime).toHours(),
+                Duration.between(items.item1.startTime, items.item1.endTime).toMinutes() % 60,
+                (Duration.between(items.item1.startTime, items.item1.endTime).toMillis() / 1000) % 60)
+        );
     }
 
 

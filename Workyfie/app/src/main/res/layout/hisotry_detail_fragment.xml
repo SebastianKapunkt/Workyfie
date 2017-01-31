@@ -65,7 +65,7 @@
             <TextView
                 android:id="@+id/duration_field"
                 style="@style/history_text_field.weight_two"
-                android:text="placeholder" />
+                android:text=" " />
         </TableRow>
 
         <TableRow>
@@ -91,7 +91,7 @@
             <TextView
                 android:id="@+id/end_time_field"
                 style="@style/history_text_field.weight_two"
-                android:text="placeholder" />
+                android:text=" " />
         </TableRow>
     </TableLayout>
 </LinearLayout>
