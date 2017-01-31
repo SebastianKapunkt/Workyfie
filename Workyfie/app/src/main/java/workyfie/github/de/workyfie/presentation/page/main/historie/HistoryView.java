@@ -10,4 +10,6 @@ public interface HistoryView extends PresenterView {
     void drawHistory(List<Session> items);
 
     void openHistoryItem(String id);
+
+    void showDeleteDialog(String s);
 }

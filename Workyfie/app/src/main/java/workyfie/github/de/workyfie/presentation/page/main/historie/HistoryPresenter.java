@@ -82,6 +82,40 @@ public class HistoryPresenter implements Presenter<HistoryView>,
         );
     }
 
+    public void registerDeleteClicks(Observable<String> onDeleteClicks) {
+        subscription().add(
+                onDeleteClicks
+                        .subscribeOn(threadingModule.getIOScheduler())
+                        .observeOn(threadingModule.getMainScheduler())
+                        .subscribe(new Observer<String>() {
+                            @Override
+                            public void onCompleted() {
+
+                            }
+
+                            @Override
+                            public void onError(Throwable e) {
+
+                            }
+
+                            @Override
+                            public void onNext(String s) {
+                                view.showDeleteDialog(s);
+                            }
+                        })
+        );
+    }
+
+    public void deleteSession(String id) {
+        subscription().add(
+                repository.delete(id)
+                        .flatMap(ignore -> repository.list())
+                        .subscribeOn(threadingModule.getIOScheduler())
+                        .observeOn(threadingModule.getMainScheduler())
+                        .subscribe(this)
+        );
+    }
+
     private void drawView(List<Session> items) {
         view.drawHistory(items);
     }

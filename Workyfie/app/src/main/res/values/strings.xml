@@ -34,4 +34,5 @@
     <string name="start">Start</string>
     <string name="stop">Stop</string>
     <string name="date">Datum:</string>
+    <string name="delete_history">Wollen Sie wirklich diesen Eintrag löschen?</string>
 </resources>

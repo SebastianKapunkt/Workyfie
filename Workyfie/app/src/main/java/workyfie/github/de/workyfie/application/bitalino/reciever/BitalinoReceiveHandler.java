@@ -18,9 +18,8 @@ import workyfie.github.de.workyfie.data.repos.graphdatapoint.GraphDataPointRepos
 import workyfie.github.de.workyfie.data.repos.session.SessionRepository;
 import workyfie.github.de.workyfie.data.view.models.GraphDataPoint;
 
-import static workyfie.github.de.workyfie.presentation.page.main.sensor.SensorPresenter.TAG;
-
 public class BitalinoReceiveHandler implements IBitalinoOnReceiveCallback {
+    public static final String TAG = BitalinoReceiveHandler.class.getSimpleName();
 
     private BitalinoProxy bitalinoProxy;
 
@@ -124,26 +123,31 @@ public class BitalinoReceiveHandler implements IBitalinoOnReceiveCallback {
             subscription.add(
                     sessionRepository.get(String.valueOf(currentSessionId))
                             .flatMap(session ->
-                                    Observable.zip(
-                                            Observable.just((double) (Instant.now().toEpochMilli() - session.startTime.toEpochMilli()) / 1000),
-                                            Observable.just(copyList),
-                                            (diff, data) -> {
-                                                Double sum = 0.0;
+                                            Observable.zip(
+                                                    Observable.just((double) (Instant.now().toEpochMilli() - session.startTime.toEpochMilli()) / 1000),
+                                                    Observable.just(copyList)
+                                                    .flatMap(Observable::from)
+                                                    .filter(item -> item.y > 0 && item.y < 1000)
+                                                    .toList()
+                                                    ,
+                                                    (diff, data) -> {
+                                                        Double sum = 0.0;
 
-                                                for (GraphDataPoint point : data) {
-                                                    sum = sum + point.y;
-                                                }
+                                                        for (GraphDataPoint point : data) {
+                                                            sum = sum + point.y;
+                                                        }
 
-                                                return new GraphDataPoint(
-                                                        String.valueOf(System.currentTimeMillis()),
-                                                        Integer.valueOf(currentSessionId).toString(),
-                                                        diff,
-                                                        sum / data.size()
-                                                );
-                                            })
-                                            .observeOn(threadingModule.getMainScheduler())
-                                            .doOnNext(data -> pointList = new ArrayList<>())
-                                            .observeOn(threadingModule.getIOScheduler())
+                                                        Log.i(TAG, data.size() + " ");
+                                                        return new GraphDataPoint(
+                                                                String.valueOf(System.currentTimeMillis()),
+                                                                Integer.valueOf(currentSessionId).toString(),
+                                                                diff,
+                                                                sum / data.size()
+                                                        );
+                                                    })
+                                                    .observeOn(threadingModule.getMainScheduler())
+                                                    .doOnNext(data -> pointList = new ArrayList<>())
+                                                    .observeOn(threadingModule.getIOScheduler())
                             )
                             .flatMap(graphDataPointRepository::save)
                             .subscribeOn(threadingModule.getIOScheduler())
@@ -151,7 +155,7 @@ public class BitalinoReceiveHandler implements IBitalinoOnReceiveCallback {
                             .subscribe(new Observer<GraphDataPoint>() {
                                 @Override
                                 public void onCompleted() {
-                                    Log.i(TAG, "completed");
+
                                 }
 
                                 @Override

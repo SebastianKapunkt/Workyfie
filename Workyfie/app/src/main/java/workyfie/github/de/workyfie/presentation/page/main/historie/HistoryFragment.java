@@ -1,8 +1,10 @@
 package workyfie.github.de.workyfie.presentation.page.main.historie;
 
 import android.app.Fragment;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -25,6 +27,7 @@ public class HistoryFragment extends Fragment
     private HistoryPresenter presenter;
     private RecyclerView recyclerView;
     private HistoryAdapter adapter;
+    private AlertDialog alert;
 
     public static HistoryFragment newInstance() {
         Bundle args = new Bundle();
@@ -68,6 +71,12 @@ public class HistoryFragment extends Fragment
     }
 
     @Override
+    public void onPause() {
+        alert = null;
+        super.onPause();
+    }
+
+    @Override
     public void onStop() {
         presenter.detach();
         super.onStop();
@@ -78,6 +87,7 @@ public class HistoryFragment extends Fragment
         adapter = new HistoryAdapter(items);
         recyclerView.setAdapter(adapter);
         presenter.setAdapterClickHistoryItemObserver(adapter.getHistoryClicks());
+        presenter.registerDeleteClicks(adapter.getDeleteClicks());
     }
 
     @Override
@@ -88,5 +98,18 @@ public class HistoryFragment extends Fragment
                 .replace(R.id.container_main, HistoryDetailFragment.newInstance(id), HistoryDetailFragment.TAG)
                 .addToBackStack(HistoryDetailFragment.TAG)
                 .commit();
+    }
+
+    @Override
+    public void showDeleteDialog(String s) {
+        alert = new AlertDialog.Builder(getActivity())
+                .setMessage(R.string.delete_history)
+                .setNegativeButton("Nein", (dialog, which) -> alert.dismiss())
+                .setPositiveButton("Ja", (dialog, which) -> {
+                    presenter.deleteSession(s);
+                    alert.dismiss();
+                })
+                .create();
+        alert.show();
     }
 }

@@ -31,14 +31,16 @@ public class SessionRepository {
     }
 
     public Observable<List<Session>> list() {
-        return cache.list()
-                .switchIfEmpty(
-                        persistence.list()
-                                .flatMap(cache::save)
-                )
+        return persistence.list()
+                .flatMap(cache::save)
                 .map(sessions -> {
                     Collections.reverse(sessions);
                     return sessions;
                 });
+    }
+
+    public Observable<String> delete(String id) {
+        return persistence.delete(id)
+                .doOnNext(ignore -> cache.clearCache());
     }
 }

@@ -4,6 +4,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import org.threeten.bp.Duration;
@@ -21,6 +22,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
 
     private List<Session> items;
     private final PublishSubject<String> onClickHistoryItem = PublishSubject.create();
+    private final PublishSubject<String> onDeleteClick = PublishSubject.create();
 
     public HistoryAdapter(List<Session> items) {
         this.items = items;
@@ -51,10 +53,15 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
             ));
         }
         holder.itemView.setOnClickListener(v -> onClickHistoryItem.onNext(items.get(position).id));
+        holder.delete.setOnClickListener(v -> onDeleteClick.onNext(items.get(position).id));
     }
 
     public Observable<String> getHistoryClicks() {
         return onClickHistoryItem;
+    }
+
+    public Observable<String> getDeleteClicks() {
+        return onDeleteClick;
     }
 
     @Override
@@ -66,12 +73,14 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
         public TextView name;
         public TextView date;
         public TextView duration;
+        public ImageView delete;
 
         public ViewHolder(View v) {
             super(v);
             name = (TextView) v.findViewById(R.id.name_field);
             date = (TextView) v.findViewById(R.id.date_field);
             duration = (TextView) v.findViewById(R.id.duration_field);
+            delete = (ImageView) v.findViewById(R.id.delete);
         }
     }
 }

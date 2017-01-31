@@ -3,6 +3,7 @@ package workyfie.github.de.workyfie.data.repos.session;
 import java.util.List;
 
 import io.realm.Realm;
+import io.realm.RealmResults;
 import rx.Observable;
 import workyfie.github.de.workyfie.data.persistence.models.PersistenceSession;
 import workyfie.github.de.workyfie.data.persistence.models.converter.SessionPersistenceViewConverter;
@@ -74,6 +75,20 @@ public class SessionPersistenceDataSource {
             if (sessionList.size() > 0) {
                 subscriber.onNext(sessionList);
             }
+            subscriber.onCompleted();
+        });
+    }
+
+    public Observable<String> delete(String id) {
+        return Observable.create(subscriber -> {
+            Realm realm = Realm.getDefaultInstance();
+
+            realm.beginTransaction();
+            RealmResults<PersistenceSession> rows = realm.where(PersistenceSession.class).equalTo("id",Long.valueOf(id)).findAll();
+            rows.deleteAllFromRealm();
+            realm.commitTransaction();
+
+            subscriber.onNext(id);
             subscriber.onCompleted();
         });
     }

@@ -193,9 +193,9 @@ public class MeasureFragment extends Fragment implements MeasureView, View.OnCli
     @Override
     public void addGraphData(DataPoint dataPoint) {
         if (dataPoint.getX() <= MAX_X) {
-            series.appendData(dataPoint, false, 100);
+            series.appendData(dataPoint, false, 1000);
         } else {
-            series.appendData(dataPoint, true, 100);
+            series.appendData(dataPoint, true, 1000);
         }
 
     }
